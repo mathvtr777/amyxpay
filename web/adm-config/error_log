@@ -1,0 +1,11 @@
+[21-Mar-2025 17:42:38 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm-config/index.php on line 52
+[21-Mar-2025 17:42:38 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm-config/index.php on line 194
+[21-Mar-2025 17:42:38 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm-config/index.php on line 404
+[21-Mar-2025 17:50:12 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm-config/index.php on line 52
+[21-Mar-2025 17:50:12 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm-config/index.php on line 194
+[21-Mar-2025 17:50:12 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm-config/index.php on line 404
+[23-Mar-2025 17:18:41 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm-config/editar_adquirente_pix.php on line 52
+[23-Mar-2025 17:18:48 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm-config/editar_adquirente_pix.php on line 52
+[23-Mar-2025 17:18:48 UTC] PHP Warning:  Undefined array key "url_cash_in" in /home/cauaj/public_html/web/adm-config/editar_adquirente_pix.php on line 183
+[23-Mar-2025 17:18:48 UTC] PHP Warning:  Undefined array key "url_cash_in" in /home/cauaj/public_html/web/adm-config/editar_adquirente_pix.php on line 216
+[24-Mar-2025 16:34:41 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm-config/editar_adquirente_pix.php on line 52

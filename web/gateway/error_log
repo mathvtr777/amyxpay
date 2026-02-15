@@ -1,0 +1,4 @@
+[21-Mar-2025 17:42:59 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/gateway/index.php on line 55
+[21-Mar-2025 17:42:59 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/gateway/index.php on line 140
+[21-Mar-2025 17:46:01 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/gateway/index.php on line 132
+[21-Mar-2025 17:47:59 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/gateway/index.php on line 132

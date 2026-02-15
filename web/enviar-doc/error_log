@@ -1,0 +1,12 @@
+[22-Mar-2025 04:21:13 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/enviar-doc/index.php on line 56
+[22-Mar-2025 04:21:13 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/enviar-doc/index.php on line 152
+[22-Mar-2025 04:42:38 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/enviar-doc/index.php on line 56
+[22-Mar-2025 04:42:38 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/enviar-doc/index.php on line 152
+[22-Mar-2025 20:34:56 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/enviar-doc/index.php on line 56
+[22-Mar-2025 20:34:56 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/enviar-doc/index.php on line 152
+[25-Mar-2025 22:27:01 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/enviar-doc/index.php on line 56
+[25-Mar-2025 22:27:01 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/enviar-doc/index.php on line 152
+[25-Mar-2025 22:29:22 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/enviar-doc/index.php on line 56
+[25-Mar-2025 22:29:22 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/enviar-doc/index.php on line 152
+[26-Mar-2025 20:01:50 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/enviar-doc/index.php on line 56
+[26-Mar-2025 20:01:50 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/enviar-doc/index.php on line 152

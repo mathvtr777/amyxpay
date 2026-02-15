@@ -1,0 +1,13 @@
+[21-Mar-2025 17:49:50 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/relatorio/pix-entrada.php on line 98
+[21-Mar-2025 14:49:50 America/Sao_Paulo] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/relatorio/pix-entrada.php on line 162
+[21-Mar-2025 14:49:50 America/Sao_Paulo] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/relatorio/pix-entrada.php on line 219
+[21-Mar-2025 17:50:40 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/relatorio/pix-entrada.php on line 98
+[21-Mar-2025 14:50:40 America/Sao_Paulo] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/relatorio/pix-entrada.php on line 162
+[21-Mar-2025 14:50:40 America/Sao_Paulo] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/relatorio/pix-entrada.php on line 219
+[21-Mar-2025 17:51:31 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/relatorio/pix-entrada.php on line 98
+[21-Mar-2025 14:51:31 America/Sao_Paulo] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/relatorio/pix-entrada.php on line 162
+[21-Mar-2025 14:51:31 America/Sao_Paulo] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/relatorio/pix-entrada.php on line 219
+[21-Mar-2025 17:53:16 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/relatorio/pix-saida.php on line 36
+[21-Mar-2025 14:53:16 America/Sao_Paulo] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/relatorio/pix-saida.php on line 615
+[21-Mar-2025 14:53:57 America/Sao_Paulo] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/relatorio/pix-saida.php on line 608
+[21-Mar-2025 15:13:14 America/Sao_Paulo] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/relatorio/pix-saida.php on line 608

@@ -1,0 +1,6 @@
+[21-Mar-2025 17:53:59 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/financeiro/index.php on line 60
+[21-Mar-2025 17:53:59 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/financeiro/index.php on line 554
+[24-Mar-2025 01:00:11 UTC] PHP Fatal error:  Uncaught Error: Call to a member function bind_param() on bool in /home/cauaj/public_html/web/financeiro/index.php:263
+Stack trace:
+#0 {main}
+  thrown in /home/cauaj/public_html/web/financeiro/index.php on line 263

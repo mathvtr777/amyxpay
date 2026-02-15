@@ -1,0 +1,25 @@
+.elementor-kit-13{--e-global-color-primary:#FFFFFF;--e-global-color-secondary:#F5F5F5;--e-global-color-text:#000000;--e-global-color-accent:#0051FC;--e-global-color-9e63eba:#0152F8;--e-global-color-ed3c623:#013092;--e-global-typography-primary-font-family:"TacticSans";--e-global-typography-primary-font-size:40px;--e-global-typography-primary-font-weight:700;--e-global-typography-secondary-font-family:"Sora";--e-global-typography-secondary-font-size:30px;--e-global-typography-secondary-font-weight:300;--e-global-typography-text-font-family:"Sora";--e-global-typography-text-font-weight:400;--e-global-typography-accent-font-family:"Sora";--e-global-typography-accent-font-weight:500;}.elementor-section.elementor-section-boxed > .elementor-container{max-width:1280px;}.e-con{--container-max-width:1280px;}.elementor-widget:not(:last-child){margin-block-end:20px;}.elementor-element{--widgets-spacing:20px 20px;}{}h1.entry-title{display:var(--page-title-display);}.elementor-kit-13 e-page-transition{background-color:#FFBC7D;}.site-header .site-branding{flex-direction:column;align-items:stretch;}.site-header{padding-inline-end:0px;padding-inline-start:0px;}.site-footer .site-branding{flex-direction:column;align-items:stretch;}@media(max-width:1024px){.elementor-section.elementor-section-boxed > .elementor-container{max-width:1024px;}.e-con{--container-max-width:1024px;}}@media(max-width:767px){.elementor-section.elementor-section-boxed > .elementor-container{max-width:767px;}.e-con{--container-max-width:767px;}}/* Start Custom Fonts CSS */@font-face {
+	font-family: 'TacticSans';
+	font-style: normal;
+	font-weight: 700;
+	font-display: auto;
+	src: url('../fonts/2IZUM3cRSRgW.eot');
+	src: url('../fonts/2IZUM3cRSRgW.eot#iefix') format('embedded-opentype'),
+		url('../fonts/042kDVxuozPB.woff2') format('woff2'),
+		url('../fonts/XU1H7cYRI61J.woff') format('woff'),
+		url('../fonts/COEh9SGUjrs3.ttf') format('truetype'),
+		url('../images/SBG5Wrn8lV6w.svg#TacticSans') format('svg');
+}
+@font-face {
+	font-family: 'TacticSans';
+	font-style: normal;
+	font-weight: 500;
+	font-display: auto;
+	src: url('../fonts/1cr0aG2dpG9r.eot');
+	src: url('../fonts/1cr0aG2dpG9r.eot#iefix') format('embedded-opentype'),
+		url('../fonts/0ebsrqiA3K4w.woff2') format('woff2'),
+		url('../fonts/DCgWTZgzRD6E.woff') format('woff'),
+		url('../fonts/yREYT4X637k8.ttf') format('truetype'),
+		url('../images/fTmysylOJAEO.svg#TacticSans') format('svg');
+}
+/* End Custom Fonts CSS */

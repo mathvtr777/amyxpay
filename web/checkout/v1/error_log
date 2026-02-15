@@ -1,0 +1,14 @@
+[23-Mar-2025 11:02:59 UTC] PHP Warning:  Trying to access array offset on value of type null in /home/cauaj/public_html/web/checkout/v1/index.php on line 2108
+[23-Mar-2025 11:02:59 UTC] PHP Warning:  Trying to access array offset on value of type null in /home/cauaj/public_html/web/checkout/v1/index.php on line 2486
+[23-Mar-2025 11:02:59 UTC] PHP Warning:  Trying to access array offset on value of type null in /home/cauaj/public_html/web/checkout/v1/index.php on line 2624
+[24-Mar-2025 00:14:34 UTC] PHP Warning:  Trying to access array offset on value of type null in /home/cauaj/public_html/web/checkout/v1/index.php on line 2108
+[24-Mar-2025 00:14:34 UTC] PHP Warning:  Trying to access array offset on value of type null in /home/cauaj/public_html/web/checkout/v1/index.php on line 2486
+[24-Mar-2025 00:14:34 UTC] PHP Warning:  Trying to access array offset on value of type null in /home/cauaj/public_html/web/checkout/v1/index.php on line 2624
+[24-Mar-2025 01:29:56 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout/v1/index.php:2115
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout/v1/index.php(2115): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout/v1/index.php on line 2115
+[26-Mar-2025 02:39:32 UTC] PHP Warning:  Trying to access array offset on value of type null in /home/cauaj/public_html/web/checkout/v1/index.php on line 2108
+[26-Mar-2025 02:39:32 UTC] PHP Warning:  Trying to access array offset on value of type null in /home/cauaj/public_html/web/checkout/v1/index.php on line 2486
+[26-Mar-2025 02:39:32 UTC] PHP Warning:  Trying to access array offset on value of type null in /home/cauaj/public_html/web/checkout/v1/index.php on line 2624

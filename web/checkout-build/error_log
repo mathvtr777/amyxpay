@@ -1,0 +1,177 @@
+[21-Mar-2025 17:55:05 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/checkout-build/index.php on line 56
+[21-Mar-2025 17:55:05 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/checkout-build/index.php on line 109
+[21-Mar-2025 17:55:10 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/checkout-build/index.php on line 56
+[21-Mar-2025 17:55:10 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/checkout-build/index.php on line 109
+[24-Mar-2025 01:21:03 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:21:09 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:21:13 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:21:21 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:21:28 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:21:53 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:22:10 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:22:19 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:23:49 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:23:50 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:23:51 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:23:52 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:23:52 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:23:52 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:23:53 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:24:12 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:24:21 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:24:24 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:24:30 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:27:18 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:27:20 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:27:21 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:27:21 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:27:21 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:27:21 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:27:22 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:27:22 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:27:22 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:27:23 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:27:24 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:27:25 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:27:26 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:27:26 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:29:27 UTC] PHP Fatal error:  Uncaught TypeError: number_format(): Argument #1 ($num) must be of type float, string given in /home/cauaj/public_html/web/checkout-build/index.php:294
+Stack trace:
+#0 /home/cauaj/public_html/web/checkout-build/index.php(294): number_format()
+#1 {main}
+  thrown in /home/cauaj/public_html/web/checkout-build/index.php on line 294
+[24-Mar-2025 01:50:17 UTC] PHP Warning:  Undefined variable $styles in /home/cauaj/public_html/web/layouts/base.php on line 34
+[24-Mar-2025 01:50:24 UTC] PHP Warning:  Undefined variable $styles in /home/cauaj/public_html/web/layouts/base.php on line 34
+[24-Mar-2025 01:56:20 UTC] PHP Warning:  Undefined variable $styles in /home/cauaj/public_html/web/layouts/base.php on line 34

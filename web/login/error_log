@@ -1,0 +1,9 @@
+[22-Mar-2025 03:16:24 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/login/index.php on line 11
+[22-Mar-2025 03:16:27 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/login/index.php on line 11
+[22-Mar-2025 03:16:43 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/login/index.php on line 11
+[22-Mar-2025 03:17:03 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/login/index.php on line 11
+[22-Mar-2025 03:17:07 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/login/index.php on line 11
+[24-Mar-2025 16:06:24 UTC] PHP Warning:  Undefined array key "email" in /home/cauaj/public_html/web/login/index.php on line 25
+[24-Mar-2025 16:06:24 UTC] PHP Warning:  Undefined array key "password" in /home/cauaj/public_html/web/login/index.php on line 26
+[25-Mar-2025 21:07:04 UTC] PHP Warning:  Undefined array key "email" in /home/cauaj/public_html/web/login/index.php on line 25
+[25-Mar-2025 21:07:04 UTC] PHP Warning:  Undefined array key "password" in /home/cauaj/public_html/web/login/index.php on line 26

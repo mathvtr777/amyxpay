@@ -1,0 +1,35 @@
+[21-Mar-2025 17:50:25 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm/usuarios.php on line 45
+[21-Mar-2025 17:50:25 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm/usuarios.php on line 143
+[21-Mar-2025 17:50:25 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm/usuarios.php on line 371
+[21-Mar-2025 17:50:32 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm/user_details.php on line 46
+[21-Mar-2025 17:50:32 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm/user_details.php on line 144
+[21-Mar-2025 17:50:35 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm/usuarios.php on line 45
+[21-Mar-2025 17:50:35 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm/usuarios.php on line 143
+[21-Mar-2025 17:50:35 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm/usuarios.php on line 371
+[21-Mar-2025 17:56:29 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm/index.php on line 49
+[21-Mar-2025 17:57:56 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm/usuarios.php on line 45
+[21-Mar-2025 17:57:56 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm/usuarios.php on line 143
+[21-Mar-2025 17:57:56 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm/usuarios.php on line 371
+[21-Mar-2025 17:58:51 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm/usuarios.php on line 358
+[21-Mar-2025 17:59:15 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm/user_details.php on line 46
+[21-Mar-2025 17:59:15 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm/user_details.php on line 144
+[21-Mar-2025 18:00:49 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm/user_details.php on line 63
+[21-Mar-2025 18:00:49 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm/user_details.php on line 161
+[21-Mar-2025 18:00:56 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm/user_details.php on line 63
+[21-Mar-2025 18:00:56 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm/user_details.php on line 161
+[21-Mar-2025 18:11:36 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm/saques_usuarios.php on line 230
+[21-Mar-2025 18:11:36 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm/saques_usuarios.php on line 365
+[24-Mar-2025 03:36:16 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm/financeiro.php on line 47
+[24-Mar-2025 03:36:16 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm/financeiro.php on line 145
+[24-Mar-2025 03:36:16 UTC] PHP Fatal error:  Uncaught Error: Call to a member function fetch_assoc() on bool in /home/cauaj/public_html/web/adm/financeiro.php:194
+Stack trace:
+#0 {main}
+  thrown in /home/cauaj/public_html/web/adm/financeiro.php on line 194
+[24-Mar-2025 16:36:43 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm/deposito_details.php on line 46
+[24-Mar-2025 16:36:43 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm/deposito_details.php on line 144
+[24-Mar-2025 16:36:43 UTC] PHP Warning:  Undefined array key "requestNumber" in /home/cauaj/public_html/web/adm/deposito_details.php on line 325
+[24-Mar-2025 16:36:43 UTC] PHP Warning:  Undefined array key "dueDate" in /home/cauaj/public_html/web/adm/deposito_details.php on line 329
+[25-Mar-2025 01:05:40 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm/deposito_details.php on line 46
+[25-Mar-2025 01:05:40 UTC] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in /home/cauaj/public_html/web/adm/deposito_details.php on line 144
+[25-Mar-2025 01:05:40 UTC] PHP Warning:  Undefined array key "requestNumber" in /home/cauaj/public_html/web/adm/deposito_details.php on line 325
+[25-Mar-2025 01:05:40 UTC] PHP Warning:  Undefined array key "dueDate" in /home/cauaj/public_html/web/adm/deposito_details.php on line 329
