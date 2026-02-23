@@ -1,5 +1,6 @@
 <?php
-include '../../conectarbanco.php'; // Conectar ao banco de dados
+include __DIR__ . '/../../conectarbanco.php'; // Conectar ao banco de dados
+require_once __DIR__ . '/../../app/Middleware/TenantResolver.php';
 
 // Conectar ao banco de dados
 $conn = new mysqli('localhost', $config['db_user'], $config['db_pass'], $config['db_name']);
@@ -9,25 +10,29 @@ if ($conn->connect_error) {
   die("Erro na conexão com o banco de dados: " . $conn->connect_error);
 }
 
+// Inicializa Resolver e valida o Domínio do Cliente
+$resolver = new \App\Middleware\TenantResolver($conn);
+$tenantContext = $resolver->resolve();
+
+// Bloqueia checkout em domains admins/SaaS principais (ex: uranopay.com) 
+if ($tenantContext['type'] === 'saas_admin') {
+  die("Checkout indisponivel no dominio principal.");
+}
+
+$tenantUserId = $tenantContext['user_id'];
+
 // Verifica se o parâmetro 'id' está presente na URL
 if (isset($_GET['id'])) {
-  // Recupera o valor do parâmetro 'id'
-  $id = $_GET['id'];
-
-  // Sanitiza o valor do parâmetro
-  $id = filter_var($id, FILTER_SANITIZE_STRING);
-
-  // Construa a consulta SQL para procurar o id na coluna url_checkout
-  $sql = "SELECT id, name_produto, valor, logo_produto, banner_produto, obrigado_page, key_gateway, ativo, email
-            FROM checkout_build
-            WHERE url_checkout LIKE ?";
-
-  // Adiciona o ID sanitizado ao padrão de busca com LIKE
+  $id = filter_var($_GET['id'], FILTER_SANITIZE_STRING);
   $id_like = "%?id=" . $id . "%";
 
-  // Prepara e executa a consulta
+  // IMPORTANTE: Busca apenas o produto SE ele pertencer ao usuário dono do domínio acessado
+  $sql = "SELECT id, name_produto, valor, logo_produto, banner_produto, obrigado_page, key_gateway, ativo, email
+            FROM checkout_build
+            WHERE url_checkout LIKE ? AND user_id = ?";
+
   $stmt = $conn->prepare($sql);
-  $stmt->bind_param("s", $id_like);
+  $stmt->bind_param("ss", $id_like, $tenantUserId);
   $stmt->execute();
 
   // Obtém os resultados

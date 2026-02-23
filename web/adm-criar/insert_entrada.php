@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $paymentCodeBase64 = null;
     $adquirente_ref = null; 
     $taxa_cash_in = 0.00; 
-    $deposito_liquido = $_POST['valor']; 
+    $amount = $_POST['valor']; 
     $taxa_pix_cash_in_adquirente = 0.00;
     $taxa_pix_cash_in_valor_fixo = 0.00; 
     $executor_ordem = 'ADMIN-NETO';
@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt = $conn->prepare("INSERT INTO solicitacoes 
         (user_id, externalreference, amount, client_name, client_document, client_email, real_data, 
         status, qrcode_pix, paymentcode, idtransaction, paymentCodeBase64, adquirente_ref, 
-        taxa_cash_in, deposito_liquido, taxa_pix_cash_in_adquirente, taxa_pix_cash_in_valor_fixo, 
+        taxa_cash_in, amount, 
         client_telefone, executor_ordem, descricao_transacao) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $paymentCodeBase64, 
         $adquirente_ref, 
         $taxa_cash_in, 
-        $deposito_liquido, 
+        $amount, 
         $taxa_pix_cash_in_adquirente, 
         $taxa_pix_cash_in_valor_fixo, 
         $client_telefone, 

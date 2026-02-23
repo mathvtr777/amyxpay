@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 
 // Função para validar os dados do formulário
@@ -55,15 +55,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $taxa_cash_in = $taxaPadroes['taxa_cash_in_padrao'];
     $taxa_cash_out = $taxaPadroes['taxa_cash_out_padrao'];
 
-    // Atualizar a consulta para incluir o nome, telefone, taxa_cash_in e taxa_cash_out
-    $insertQuery = "INSERT INTO users (id, user_id, nome, email, senha, telefone, saldo, data_cadastro, status, permission, cliente_id, taxa_cash_in, taxa_cash_out) 
+    // Atualizar a consulta para incluir o nome, telefone e taxa_cash_out
+    $insertQuery = "INSERT INTO users (id, user_id, nome, email, senha, telefone, saldo, data_cadastro, status, permission, cliente_id) 
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($insertQuery);
     if (!$stmt) {
       die("Erro na preparação da consulta: " . $conn->error);
     }
 
-    $stmt->bind_param("issssisssssii", $nextId, $user_id, $nome, $email, $senhaHash, $telefone, $saldo, $dataCadastroFormatada, $status, $permission, $clienteId, $taxa_cash_in, $taxa_cash_out);
+    $stmt->bind_param("issssisssssii", $nextId, $user_id, $nome, $email, $senhaHash, $telefone, $dataCadastroFormatada, $status, $permission, $clienteId);
 
     if ($stmt->execute()) {
       // Definir o email como uma variável de sessão
@@ -157,7 +157,7 @@ function getWebhookUrl($conn)
 // Função para obter os valores padrão de taxa_cash_in e taxa_cash_out da tabela app
 function getTaxaPadroes($conn)
 {
-  $query = "SELECT taxa_cash_in_padrao, taxa_cash_out_padrao FROM app LIMIT 1";
+  $query = "SELECT taxa_cash_in_padrao_padrao FROM app LIMIT 1";
   $result = $conn->query($query);
 
   if ($result && $result->num_rows > 0) {

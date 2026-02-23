@@ -1,4 +1,4 @@
-
+﻿
 
 <?php
 session_start();
@@ -44,11 +44,11 @@ if ($conn->connect_error) {
 
 $email = $_SESSION['email'];
 
-$sql = "SELECT user_id, nome, status, permission, saldo, transacoes_aproved FROM users WHERE email = ?";
+$sql = "SELECT user_id, nome, status, permission, transacoes_aproved FROM users WHERE email = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $email);
 $stmt->execute();
-$stmt->bind_result($user_id, $nome, $status, $permission, $saldo, $transacoes_aproved);
+$stmt->bind_result($user_id, $nome, $status, $permission, $transacoes_aproved);
 $stmt->fetch();
 
 $_SESSION['user_id'] = $user_id;
@@ -98,11 +98,11 @@ if ($conn->connect_error) {
 $email = $_SESSION['email'];
 
 // Consulta SQL para obter informações do usuário com base no e-mail da sessão
-$sql = "SELECT user_id, nome, status, permission, saldo, transacoes_aproved FROM users WHERE email = ?";
+$sql = "SELECT user_id, nome, status, permission, transacoes_aproved FROM users WHERE email = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $email);
 $stmt->execute();
-$stmt->bind_result($user_id, $nome, $status, $permission, $saldo, $transacoes_aproved);
+$stmt->bind_result($user_id, $nome, $status, $permission, $transacoes_aproved);
 $stmt->fetch();
 
 // Armazenar user_id em uma variável

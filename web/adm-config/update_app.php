@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 include '../conectarbanco.php';
 
 // Conectar ao banco de dados
@@ -15,9 +15,9 @@ $taxa_cash_out_padrao = $_POST['taxa_cash_out_padrao'];
 $taxa_pix_valor_real_cash_in_padrao = $_POST['taxa_pix_valor_real_cash_in_padrao']; // Novo campo
 
 // Atualizar o único registro
-$sql = "UPDATE app SET taxa_cash_in_padrao = ?, taxa_cash_out_padrao = ?, taxa_pix_valor_real_cash_in_padrao = ? WHERE 1"; // Incluindo nova coluna
+$sql = "UPDATE app SET taxa_cash_in_padrao = ?_padrao = ?, taxa_pix_valor_real_cash_in_padrao = ? WHERE 1"; // Incluindo nova coluna
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("ddd", $taxa_cash_in_padrao, $taxa_cash_out_padrao, $taxa_pix_valor_real_cash_in_padrao); // Alterado para 'ddd' para incluir o novo parâmetro
+$stmt->bind_param("ddd"_padrao_padrao, $taxa_pix_valor_real_cash_in_padrao); // Alterado para 'ddd' para incluir o novo parâmetro
 
 if ($stmt->execute()) {
     echo 'success';

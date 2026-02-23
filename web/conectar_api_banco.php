@@ -2,9 +2,9 @@
 
 $config = array(
     'db_host' => 'localhost',
-    'db_user' => 'u405940765_testeurano',
-    'db_pass' => 'Tania96@@96',
-    'db_name' => 'u405940765_uranopay'
+    'db_user' => 'root',
+    'db_pass' => '',
+    'db_name' => 'u206137224_pay'
 );
 
 ?>

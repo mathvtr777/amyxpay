@@ -1,6 +1,5 @@
-<?php
+﻿<?php
 session_start();
-
 
 function validateForm($input)
 {
@@ -13,11 +12,11 @@ include '../conectarbanco.php';
 
 $conn = new mysqli('localhost', $config['db_user'], $config['db_pass'], $config['db_name']);
 
-
 if ($conn->connect_error) {
   die("Erro na conexão com o banco de dados: " . $conn->connect_error);
 }
 
+$aviso = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
   $user_id = validateForm($_POST["user_id"]);
@@ -26,15 +25,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $senha = validateForm($_POST["password"]);
   $telefone = validateForm($_POST["telefone"]);
 
-
   if (emailExists($email, $conn)) {
     $aviso = "O e-mail já está sendo usado.";
-  } elseif (userIdExists($user_id, $conn)) {
+  }
+  elseif (userIdExists($user_id, $conn)) {
     $aviso = "Usuário não está disponível!";
-  } else {
+  }
+  else {
 
     $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
-
 
     $nextId = generateRandomId(8);
     $clienteId = generateRandomString(24);
@@ -43,10 +42,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $status = 0;
     $permission = 1;
 
-
     $dataCadastro = new DateTime('now', new DateTimeZone('America/Sao_Paulo'));
     $dataCadastroFormatada = $dataCadastro->format('Y-m-d H:i:s');
-
 
     $taxaPadroes = getTaxaPadroes($conn);
     if ($taxaPadroes === false) {
@@ -55,49 +52,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $taxa_cash_in = $taxaPadroes['taxa_cash_in_padrao'];
     $taxa_cash_out = $taxaPadroes['taxa_cash_out_padrao'];
 
-
-    $insertQuery = "INSERT INTO users (id, user_id, nome, email, senha, telefone, saldo, data_cadastro, status, permission, cliente_id, taxa_cash_in, taxa_cash_out) 
+    $insertQuery = "INSERT INTO users (id, user_id, nome, email, senha, telefone, saldo, data_cadastro, status, permission, cliente_id) 
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($insertQuery);
     if (!$stmt) {
       die("Erro na preparação da consulta: " . $conn->error);
     }
 
-    $stmt->bind_param("issssisssssii", $nextId, $user_id, $nome, $email, $senhaHash, $telefone, $saldo, $dataCadastroFormatada, $status, $permission, $clienteId, $taxa_cash_in, $taxa_cash_out);
+    $stmt->bind_param("issssisssssii", $nextId, $user_id, $nome, $email, $senhaHash, $telefone, $dataCadastroFormatada, $status, $permission, $clienteId);
 
     if ($stmt->execute()) {
-
       $_SESSION['email'] = $email;
 
-
       $webhookUrl = getWebhookUrl($conn);
-
-
       if ($webhookUrl !== false) {
         sendToWebhook($webhookUrl, $nome, $email, $telefone);
       }
 
-
-      $aviso = "Cadastro concluído com sucesso";
-
-
-      header("refresh:3;url=https://web.uranopay.com/");
-    } else {
+      $aviso = "Cadastro concluído com sucesso!";
+      header("refresh:3;url=../");
+    }
+    else {
       $aviso = "Erro " . $stmt->error;
     }
     $stmt->close();
   }
 }
 
-
 function emailExists($email, $conn)
 {
   $checkEmailQuery = "SELECT email FROM users WHERE email = ?";
   $checkEmailStmt = $conn->prepare($checkEmailQuery);
-  if (!$checkEmailStmt) {
-    die("Erro na preparação da consulta de verificação de e-mail: " . $conn->error);
-  }
-
   $checkEmailStmt->bind_param("s", $email);
   $checkEmailStmt->execute();
   $checkEmailStmt->store_result();
@@ -106,15 +91,10 @@ function emailExists($email, $conn)
   return $exists;
 }
 
-
 function userIdExists($user_id, $conn)
 {
   $checkUserIdQuery = "SELECT user_id FROM users WHERE user_id = ?";
   $checkUserIdStmt = $conn->prepare($checkUserIdQuery);
-  if (!$checkUserIdStmt) {
-    die("Erro na preparação da consulta de verificação de user_id: " . $conn->error);
-  }
-
   $checkUserIdStmt->bind_param("s", $user_id);
   $checkUserIdStmt->execute();
   $checkUserIdStmt->store_result();
@@ -127,11 +107,9 @@ function generateRandomId($length)
 {
   $characters = '0123456789';
   $randomId = '';
-
   for ($i = 0; $i < $length; $i++) {
     $randomId .= $characters[random_int(0, strlen($characters) - 1)];
   }
-
   return $randomId;
 }
 
@@ -144,232 +122,165 @@ function getWebhookUrl($conn)
 {
   $query = "SELECT sms_url_cadastro_pendente FROM app LIMIT 1";
   $result = $conn->query($query);
-
   if ($result && $result->num_rows > 0) {
     $row = $result->fetch_assoc();
     return $row['sms_url_cadastro_pendente'];
-  } else {
+  }
+  else {
     return false;
   }
 }
-
 
 function getTaxaPadroes($conn)
 {
-  $query = "SELECT taxa_cash_in_padrao, taxa_cash_out_padrao FROM app LIMIT 1";
+  $query = "SELECT taxa_cash_in_padrao_padrao FROM app LIMIT 1";
   $result = $conn->query($query);
-
   if ($result && $result->num_rows > 0) {
     return $result->fetch_assoc();
-  } else {
+  }
+  else {
     return false;
   }
 }
 
-// Função para enviar dados ao webhook
 function sendToWebhook($url, $name, $email, $phone)
 {
-  $data = array(
-    'event' => 'novo',
-    'name' => $name,
-    'email' => $email,
-    'phone' => $phone
-  );
-
+  $data = array('event' => 'novo', 'name' => $name, 'email' => $email, 'phone' => $phone);
   $options = array(
     'http' => array(
-      'header'  => "Content-Type: application/json\r\n",
-      'method'  => 'POST',
+      'header' => "Content-Type: application/json\r\n",
+      'method' => 'POST',
       'content' => json_encode($data),
     ),
   );
-
-  $context  = stream_context_create($options);
-  $result = file_get_contents($url, false, $context);
-
-  if ($result === FALSE) {
-    die('Erro ao enviar dados para o webhook');
-  }
+  $context = stream_context_create($options);
+  file_get_contents($url, false, $context);
 }
 
 $conn->close();
 ?>
-
-
-
 <!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <link rel="apple-touch-icon" sizes="76x76" href="../img/logo-favicon.png">
-  <link rel="icon" type="image/png" href="../img/logo-favicon.png">
-  <title>URANO PAY - REGISTRAR
-  </title>
-  <!--     Fonts and icons     -->
-  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
-  <!-- Nucleo Icons -->
-  <link href="assets-login/css/nucleo-icons.css" rel="stylesheet" />
-  <link href="assets-login/css/nucleo-svg.css" rel="stylesheet" />
-  <!-- Font Awesome Icons -->
-  <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
-  <!-- Material Icons -->
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-  <!-- CSS Files -->
-  <link id="pagestyle" href="assets-login/css/material-dashboard.css?v=3.0.0" rel="stylesheet" />
+<html class="light" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cadastro - Zyro Pay</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#7c3aed",
+                        "background-light": "#f3f4f6",
+                        "background-dark": "#0a0a0c",
+                        "card-dark": "#18181b",
+                    },
+                    fontFamily: {
+                        display: ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "12px",
+                    },
+                },
+            },
+        };
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .bg-landscape {
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                        url('https://images.unsplash.com/photo-1475274047050-1d0c0975c63e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+        .aviso-success { color: #10b981; }
+        .aviso-error { color: #ef4444; }
+    </style>
 </head>
-
-<body class="bg-gray-200">
-  <div class="container position-sticky z-index-sticky top-0">
-    <div class="row">
-      <div class="col-12">
-
-      </div>
+<body class="bg-background-light dark:bg-background-dark min-h-screen flex flex-col justify-between overflow-x-hidden">
+<div class="fixed inset-0 z-0 bg-landscape pointer-events-none"></div>
+<main class="relative z-10 flex flex-grow items-center justify-center p-4">
+<div class="w-full max-w-[480px]">
+<div class="bg-white dark:bg-card-dark shadow-2xl rounded-3xl overflow-hidden transition-all duration-300">
+<div class="bg-gradient-to-br from-gray-900 to-black p-10 flex justify-center items-center">
+<div class="flex items-center space-x-2">
+<span class="text-white text-4xl font-extrabold tracking-tighter uppercase">ZYRO</span>
+<div class="bg-primary px-3 py-1 rounded-lg">
+<span class="text-white text-2xl font-bold italic uppercase">PAY</span>
+</div>
+</div>
+</div>
+<div class="px-8 py-10">
+<?php if (!empty($aviso)): ?>
+    <div class="mb-6 p-4 rounded-xl <?php echo(strpos($aviso, 'sucesso') !== false) ? 'bg-green-500/10 border border-green-500/20 aviso-success' : 'bg-red-500/10 border border-red-500/20 aviso-error'; ?> text-sm font-medium">
+        <?php echo $aviso; ?>
     </div>
-  </div>
+<?php
+endif; ?>
 
+<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" class="space-y-4" method="POST">
+<div class="relative">
+<span class="absolute inset-y-0 left-3 flex items-center text-gray-400">
+<span class="material-icons-outlined text-sm">person_outline</span>
+</span>
+<input required class="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-xl bg-transparent text-gray-800 dark:text-zinc-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-gray-400" name="user_id" placeholder="Usuário" type="text" value="<?php echo htmlspecialchars($_POST['user_id'] ?? ''); ?>"/>
+</div>
+<div class="relative">
+<span class="absolute inset-y-0 left-3 flex items-center text-gray-400">
+<span class="material-icons-outlined text-sm">badge</span>
+</span>
+<input required class="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-xl bg-transparent text-gray-800 dark:text-zinc-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-gray-400" name="fullName" placeholder="Nome Completo" type="text" value="<?php echo htmlspecialchars($_POST['fullName'] ?? ''); ?>"/>
+</div>
+<div class="relative">
+<span class="absolute inset-y-0 left-3 flex items-center text-gray-400">
+<span class="material-icons-outlined text-sm">phone</span>
+</span>
+<input required class="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-xl bg-transparent text-gray-800 dark:text-zinc-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-gray-400" name="telefone" placeholder="Telefone" type="tel" value="<?php echo htmlspecialchars($_POST['telefone'] ?? ''); ?>"/>
+</div>
+<div class="relative">
+<span class="absolute inset-y-0 left-3 flex items-center text-gray-400">
+<span class="material-icons-outlined text-sm">mail_outline</span>
+</span>
+<input required class="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-xl bg-transparent text-gray-800 dark:text-zinc-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-gray-400" name="email" placeholder="Email" type="email" value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>"/>
+</div>
+<div class="relative">
+<span class="absolute inset-y-0 left-3 flex items-center text-gray-400">
+<span class="material-icons-outlined text-sm">lock_outline</span>
+</span>
+<input required class="w-full pl-10 pr-4 py-3 border border-gray-200 dark:border-zinc-800 rounded-xl bg-transparent text-gray-800 dark:text-zinc-200 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-gray-400" name="password" placeholder="Mínimo 8 caracteres" type="password" minlength="8"/>
+</div>
+<button class="w-full mt-6 py-4 bg-gradient-to-r from-primary to-purple-700 hover:from-purple-600 hover:to-primary text-white font-bold rounded-xl transition-all duration-300 transform active:scale-95 shadow-lg shadow-primary/25" type="submit">
+                            REGISTRAR
+                        </button>
+</form>
+<div class="mt-8 text-center">
+<p class="text-sm text-gray-500 dark:text-zinc-400">
+                            Já tem uma conta? 
+                            <a class="text-primary font-semibold hover:underline" href="../login">Login</a>
+</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="relative z-10 px-8 py-6 flex flex-col md:flex-row justify-between items-center text-white/50 text-sm">
+<div class="mb-4 md:mb-0">
+            © 2026, made with by <span class="font-bold text-white uppercase">ZYRO PAY</span>
+</div>
+<div class="flex space-x-6">
+<a class="hover:text-white transition-colors" href="#">Termos</a>
+<a class="hover:text-white transition-colors" href="#">Privacidade</a>
+<a class="hover:text-white transition-colors" href="#">Suporte</a>
+</div>
+</footer>
+<button class="fixed bottom-6 right-6 z-50 p-3 bg-white dark:bg-zinc-800 rounded-full shadow-xl transition-all active:scale-90" onclick="document.documentElement.classList.toggle('dark')">
+<span class="material-icons-outlined text-gray-800 dark:text-yellow-400 block dark:hidden">dark_mode</span>
+<span class="material-icons-outlined text-gray-800 dark:text-yellow-400 hidden dark:block">light_mode</span>
+</button>
 
-
-
-  <main class="main-content  mt-0">
-    <div class="page-header align-items-start min-vh-100" style="background-image: url('https://images.unsplash.com/photo-1497294815431-9365093b7331?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1950&q=80');">
-      <span class="mask bg-gradient-dark opacity-6"></span>
-      <div class="container my-auto">
-        <div class="row">
-          <div class="col-lg-4 col-md-8 col-12 mx-auto">
-            <div class="card z-index-0 fadeIn3 fadeInBottom">
-              <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
-                <div class="bg-gradient-primary shadow-primary border-radius-lg py-3 pe-1">
-                  <img src="../img/URANOPAY-branca.png" alt="Texto alternativo" class="img-fluid d-block mx-auto mt-2 mb-0" style="max-width: 200px;">
-
-                </div>
-              </div>
-              <div class="card-body">
-                <form action="<?php echo $_SERVER['REQUEST_URI'] ?>" method="POST" onsubmit="return validateForm();">
-
-                  <div class="input-group input-group-outline my-3">
-                    <label class="form-label">Usuário</label>
-                    <input type="text" id="nome" name="user_id" class="form-control" required>
-                  </div>
-                  <div class="input-group input-group-outline my-3">
-                    <label class="form-label">Nome</label>
-                    <input type="text" id="fullName" name="fullName" class="form-control" required>
-                  </div>
-                  <div class="input-group input-group-outline my-3">
-                    <label class="form-label">Telefone</label>
-                    <input type="number" id="telefone" name="telefone" class="form-control" required>
-                  </div>
-                  <div class="input-group input-group-outline my-3">
-                    <label class="form-label">Email</label>
-                    <input type="email" id="email" name="email" class="form-control" required>
-                  </div>
-                  <div class="input-group input-group-outline mb-3">
-                    <label class="form-label">Password</label>
-                    <input type="password" name="password" id="senha" class="form-control" required minlength="8">
-                  </div>
-
-                  <?php if (!empty($aviso)): ?>
-                    <div class="aviso-visible" id="aviso">
-                      <button class="close-btn" onclick="document.getElementById('aviso').style.display='none';">&times;</button>
-                      <?php echo $aviso; ?>
-                    </div>
-                  <?php endif; ?>
-
-                  <div class="text-center">
-                    <button type="submit" class="btn bg-gradient-primary w-100 my-4 mb-2">Registrar</button>
-                  </div>
-                  <p class="mt-4 text-sm text-center">
-                    Já tem uma conta?
-                    <a href="../login/" class="text-primary text-gradient font-weight-bold">Login</a>
-                  </p>
-                </form>
-
-                <script>
-                  function validateForm() {
-                    var nome = document.getElementById('nome').value;
-                    var fullName = document.getElementById('fullName').value;
-                    var telefone = document.getElementById('telefone').value;
-                    var email = document.getElementById('email').value;
-                    var senha = document.getElementById('senha').value;
-
-
-                    if (!nome || !fullName || !telefone || !email || !senha) {
-                      alert("Por favor, preencha todos os campos obrigatórios.");
-                      return false;
-                    }
-
-                    if (senha.length < 8) {
-                      alert("A senha deve ter pelo menos 8 caracteres.");
-                      return false;
-                    }
-
-                    return true;
-                  }
-                </script>
-
-                <script>
-                  document.addEventListener('DOMContentLoaded', function() {
-                    const inputs = document.querySelectorAll('.form-control');
-
-                    inputs.forEach(input => {
-                      if (input.value) {
-                        input.parentElement.classList.add('is-filled');
-                      }
-
-                      input.addEventListener('focus', () => {
-                        input.parentElement.classList.add('is-filled');
-                      });
-
-                      input.addEventListener('blur', () => {
-                        if (!input.value) {
-                          input.parentElement.classList.remove('is-filled');
-                        }
-                      });
-                    });
-                  });
-                </script>
-
-
-
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <footer class="footer position-absolute bottom-2 py-2 w-100">
-        <div class="container">
-          <div class="row align-items-center justify-content-lg-between">
-            <div class="col-12 col-md-6 my-auto">
-              <div class="copyright text-center text-sm text-white text-lg-start">
-                © <script>
-                  document.write(new Date().getFullYear())
-                </script>,
-                made with by
-                <a href="#" class="font-weight-bold text-white">URANO PAY</a>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </footer>
-    </div>
-  </main>
-  <!--   Core JS Files   -->
-  <script src="assets-login/js/core/popper.min.js"></script>
-  <script src="assets-login/js/core/bootstrap.min.js"></script>
-  <script src="assets-login/js/plugins/perfect-scrollbar.min.js"></script>
-  <script src="assets-login/js/plugins/smooth-scrollbar.min.js"></script>
-  <script>
-    var win = navigator.platform.indexOf('Win') > -1;
-    if (win && document.querySelector('#sidenav-scrollbar')) {
-      var options = {
-        damping: '0.5'
-      }
-      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
-    }
-  </script>
-
-</body>
-
-</html>
+</body></html>

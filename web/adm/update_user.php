@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 
 include '../conectarbanco.php';
@@ -33,7 +33,7 @@ if ($stmt === false) {
 }
 
 // Associar os parâmetros e executar a consulta
-$stmt->bind_param("ssdii", $nome, $email, $saldo, $permission, $id);
+$stmt->bind_param("ssdii", $nome, $email, $permission, $id);
 if ($stmt->execute()) {
     echo 'success';
 } else {

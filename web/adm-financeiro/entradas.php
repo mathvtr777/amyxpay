@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 if (!isset($_SESSION['email'])) {
     header("Location: ../");
@@ -44,11 +44,11 @@ if ($conn->connect_error) {
 
 $email = $_SESSION['email'];
 
-$sql = "SELECT user_id, nome, status, permission, saldo, transacoes_aproved FROM users WHERE email = ?";
+$sql = "SELECT user_id, nome, status, permission, transacoes_aproved FROM users WHERE email = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $email);
 $stmt->execute();
-$stmt->bind_result($user_id, $nome, $status, $permission, $saldo, $transacoes_aproved);
+$stmt->bind_result($user_id, $nome, $status, $permission, $transacoes_aproved);
 $stmt->fetch();
 
 $_SESSION['user_id'] = $user_id;
@@ -98,11 +98,11 @@ if ($conn->connect_error) {
 $email = $_SESSION['email'];
 
 // Consulta SQL para obter informações do usuário com base no e-mail da sessão
-$sql = "SELECT user_id, nome, status, permission, saldo, transacoes_aproved FROM users WHERE email = ?";
+$sql = "SELECT user_id, nome, status, permission, transacoes_aproved FROM users WHERE email = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $email);
 $stmt->execute();
-$stmt->bind_result($user_id, $nome, $status, $permission, $saldo, $transacoes_aproved);
+$stmt->bind_result($user_id, $nome, $status, $permission, $transacoes_aproved);
 $stmt->fetch();
 
 // Armazenar user_id em uma variável
@@ -228,7 +228,7 @@ if ($conn->connect_error) {
 }
 
 // Valor total de depósito líquido aprovado hoje (PAID_OUT)
-$sqlDepositoHoje = "SELECT SUM(deposito_liquido) as total_valor FROM solicitacoes WHERE status = 'PAID_OUT' AND DATE(real_data) = '$dataHoje'";
+$sqlDepositoHoje = "SELECT SUM(amount) as total_valor FROM solicitacoes WHERE status = 'PAID_OUT' AND DATE(real_data) = '$dataHoje'";
 $resultDepositoHoje = $conn->query($sqlDepositoHoje);
 
 if ($resultDepositoHoje->num_rows > 0) {
@@ -239,7 +239,7 @@ if ($resultDepositoHoje->num_rows > 0) {
 }
 
 // Valor total de depósito líquido aprovado no mês (PAID_OUT)
-$sqlDepositoMes = "SELECT SUM(deposito_liquido) as total_valor FROM solicitacoes WHERE status = 'PAID_OUT' AND DATE_FORMAT(real_data, '%Y-%m') = '$mesAtual'";
+$sqlDepositoMes = "SELECT SUM(amount) as total_valor FROM solicitacoes WHERE status = 'PAID_OUT' AND DATE_FORMAT(real_data, '%Y-%m') = '$mesAtual'";
 $resultDepositoMes = $conn->query($sqlDepositoMes);
 
 if ($resultDepositoMes->num_rows > 0) {
@@ -250,7 +250,7 @@ if ($resultDepositoMes->num_rows > 0) {
 }
 
 // Valor total de depósito líquido aprovado (PAID_OUT)
-$sqlDepositoTotal = "SELECT SUM(deposito_liquido) as total_valor FROM solicitacoes WHERE status = 'PAID_OUT'";
+$sqlDepositoTotal = "SELECT SUM(amount) as total_valor FROM solicitacoes WHERE status = 'PAID_OUT'";
 $resultDepositoTotal = $conn->query($sqlDepositoTotal);
 
 if ($resultDepositoTotal->num_rows > 0) {
@@ -646,7 +646,7 @@ $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' 
 
 
         // Consulta para obter a soma filtrada com status PAID_OUT
-        $sqlFilteredTotal = "SELECT SUM(deposito_liquido) AS total_entrada_liquido_filtrado, SUM(amount) AS total_entrada_bruto_filtrada 
+        $sqlFilteredTotal = "SELECT SUM(amount) AS total_entrada_liquido_filtrado, SUM(amount) AS total_entrada_bruto_filtrada 
                      FROM solicitacoes WHERE status = 'PAID_OUT'";
         if (!empty($dataInicio) && !empty($dataFim)) {
             $sqlFilteredTotal .= " AND real_data BETWEEN ? AND ?";
@@ -784,7 +784,7 @@ $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' 
                                             echo "<td>{$row['user_id']}</td>";
                                             echo "<td>{$row['externalreference']}</td>";
                                             echo "<td>{$row['amount']}</td>";
-                                            echo "<td>{$row['deposito_liquido']}</td>";
+                                            echo "<td>{$row['amount']}</td>";
                                             echo "<td>{$row['idtransaction']}</td>";
 
                                             // Ajustar a exibição do status

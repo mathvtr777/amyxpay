@@ -3,10 +3,10 @@
     <!-- Start::main-sidebar-header -->
     <div class="main-sidebar-header">
         <a href="../home" class="header-logo">
-            <img src="../img/URANOPAY-black.png" alt="logo" class="desktop-logo">
-            <img src="../img/URANOPAY-black.png" alt="logo" class="toggle-dark">
-            <img src="../img/URANOPAY-branca.png" alt="logo" class="desktop-dark">
-            <img src="../img/URANOPAY-branca.png" alt="logo" class="toggle-logo">
+            <img src="../img/zyro-logo-black.png" alt="logo" class="desktop-logo">
+            <img src="../img/zyro-logo-black.png" alt="logo" class="toggle-dark">
+            <img src="../img/zyro-logo-black.png" alt="logo" class="desktop-dark" style="filter: brightness(0) invert(1);">
+            <img src="../img/zyro-logo-black.png" alt="logo" class="toggle-logo" style="filter: brightness(0) invert(1);">
         </a>
     </div>
     <!-- End::main-sidebar-header -->
@@ -123,32 +123,22 @@
 
 
 
-                    <li class="slide">
-                        <a href="../documentacao" class="side-menu__item" data-bs-toggle="modal" data-bs-target="#modalDocumentation">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" width="32" height="32" viewBox="0 0 256 256">
-                                <path d="M224,56V200a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V56a8,8,0,0,1,8-8H216A8,8,0,0,1,224,56Z" opacity="0.2"></path>
-                                <path d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,160H40V56H216V200ZM184,96a8,8,0,0,1-8,8H80a8,8,0,0,1,0-16h96A8,8,0,0,1,184,96Zm0,32a8,8,0,0,1-8,8H80a8,8,0,0,1,0-16h96A8,8,0,0,1,184,128Zm0,32a8,8,0,0,1-8,8H80a8,8,0,0,1,0-16h96A8,8,0,0,1,184,160Z"></path>
-                            </svg>
-                            <span class="side-menu__label">Documentação</span>
-
-                        </a>
-                    </li>
 
 
                     <li class="slide">
-                        <a href="../gateway" class="side-menu__item">
+                        <a href="../provedores" class="side-menu__item">
                             <svg xmlns="http://www.w3.org/2000/svg" class="side-menu__icon" width="32" height="32" viewBox="0 0 256 256">
-                                <path d="M216,96V208a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V96a8,8,0,0,1,8-8H208A8,8,0,0,1,216,96Z" opacity="0.2"></path>
-                                <path d="M208,80H176V56a48,48,0,0,0-96,0V80H48A16,16,0,0,0,32,96V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V96A16,16,0,0,0,208,80ZM96,56a32,32,0,0,1,64,0V80H96ZM208,208H48V96H208V208Zm-68-56a12,12,0,1,1-12-12A12,12,0,0,1,140,152Z"></path>
+                                <path d="M128,88a40,40,0,1,0,40,40A40,40,0,0,0,128,88Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,152Z" opacity="0.2"></path>
+                                <path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160ZM216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,160H40V56H216V200ZM184,128a8,8,0,0,1-8,8H152a8,8,0,0,1,0-16h24A8,8,0,0,1,184,128Zm-80,0a8,8,0,0,1-8,8H72a8,8,0,0,1,0-16H96A8,8,0,0,1,104,128Z"></path>
                             </svg>
-                            <span class="side-menu__label">Chaves API <span class="badge bg-primary ms-2 shadow-primary">1</span></span>
-
+                            <span class="side-menu__label">Provedores</span>
                         </a>
                     </li>
 
 
 
-                <?php endif; ?>
+                <?php
+endif; ?>
 
 
 
@@ -294,7 +284,8 @@
 
 
 
-                <?php endif; ?>
+                <?php
+endif; ?>
 
 
 

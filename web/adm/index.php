@@ -1,4 +1,4 @@
-
+﻿
 <?php
 session_start();
 
@@ -59,11 +59,11 @@ if ($conn->connect_error) {
 // Recuperar o e-mail da sessão
 $email = $_SESSION['email'];
 
-$sql = "SELECT user_id, nome, status, permission, saldo, transacoes_aproved FROM users WHERE email = ?";
+$sql = "SELECT user_id, nome, status, permission, transacoes_aproved FROM users WHERE email = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $email);
 $stmt->execute();
-$stmt->bind_result($user_id, $nome, $status, $permission, $saldo, $transacoes_aproved);
+$stmt->bind_result($user_id, $nome, $status, $permission, $transacoes_aproved);
 $stmt->fetch();
 
 // Armazenar o user_id na sessão

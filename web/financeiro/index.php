@@ -1,733 +1,498 @@
-
-
-
-
-
 <?php
 session_start();
 
-// Verificar se o e-mail está presente na sessão
+// 1. Authentication & Connection
 if (!isset($_SESSION['email'])) {
-  // Se o e-mail não estiver presente na sessão, redirecione para outra página
-  header("Location: ../");
-  exit; // Certifique-se de sair do script após o redirecionamento
-}
-
-include '../conectarbanco.php';
-
-$conn = new mysqli('localhost', $config['db_user'], $config['db_pass'], $config['db_name']);
-
-// Verifica se houve algum erro na conexão
-if ($conn->connect_error) {
-  die("Erro na conexão com o banco de dados: " . $conn->connect_error);
-}
-
-// Recuperar o e-mail da sessão
-$email = $_SESSION['email'];
-
-// Consultar o status do usuário e a taxa_cash_out pelo email
-$sql = "SELECT status, taxa_cash_out FROM users WHERE email = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $email);
-$stmt->execute();
-$stmt->bind_result($status, $taxa_cash_out);
-$stmt->fetch();
-
-$stmt->close();
-$conn->close();
-
-// Verificar o status do usuário
-if ($status == 0) {
-  // Redirecionar imediatamente para a página ../home se o status for 0
-  header("Location: ../home");
-  exit;
-}
-
-// Verificar o status do usuário
-if ($status == 5) {
-    // Redirecionar imediatamente para a página ../home se o status for 0
-    header("Location: ../home");
+    header("Location: ../");
     exit;
-  }
-
-
-// Verificar se o e-mail está presente na sessão
-if (!isset($_SESSION['email'])) {
-  // Se o e-mail não estiver presente na sessão, redirecione para outra página
-  header("Location: ../");
-  exit; // Certifique-se de sair do script após o redirecionamento
 }
 
 include '../conectarbanco.php';
-
-$conn = new mysqli('localhost', $config['db_user'], $config['db_pass'], $config['db_name']);
-
-// Verifica se houve algum erro na conexão
+$conn = new mysqli($config['db_host'], $config['db_user'], $config['db_pass'], $config['db_name']);
 if ($conn->connect_error) {
-  die("Erro na conexão com o banco de dados: " . $conn->connect_error);
+    die("Erro na conexão: " . $conn->connect_error);
 }
 
-// Recuperar o e-mail da sessão
 $email = $_SESSION['email'];
 
-$sql = "SELECT user_id, nome, status, permission, saldo, transacoes_aproved FROM users WHERE email = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $email);
-$stmt->execute();
-$stmt->bind_result($user_id, $nome, $status, $permission, $saldo, $transacoes_aproved);
-$stmt->fetch();
+// 2. Fetch User Data
+$sql_user = "SELECT user_id, nome, status, permission, total_transacoes, transacoes_aproved FROM users WHERE email = ?";
+$stmt_user = $conn->prepare($sql_user);
+$stmt_user->bind_param("s", $email);
+$stmt_user->execute();
+$stmt_user->bind_result($user_id, $nome, $status, $permission, $total_transacoes, $transacoes_aproved);
+$stmt_user->fetch();
+$stmt_user->close();
 
-// Armazenar o user_id na sessão
+if (empty($user_id)) {
+    die("Usuário não encontrado.");
+}
 $_SESSION['user_id'] = $user_id;
 
-$stmt->close();
-$conn->close();
-?>
-
-
-
-
-<?php
-
-// Verifica se o parâmetro de logout foi passado na URL
-if (isset($_GET['logout'])) {
-    // Destroi a sessão
-    session_destroy();
-    // Redireciona para a página inicial
-    header("Location: ../");
-    exit;
-}
-?>
-
-
-
-
-
-<?php
-
-// Verificar se o e-mail está presente na sessão
-if (!isset($_SESSION['email'])) {
-  // Se o e-mail não estiver presente na sessão, redirecione para outra página
-  header("Location: ../");
-  exit; // Certifique-se de sair do script após o redirecionamento
-}
-
-// Incluir o arquivo de configuração do banco de dados
-include '../conectarbanco.php';
-
-// Criar uma conexão com o banco de dados usando as credenciais fornecidas
-$conn = new mysqli('localhost', $config['db_user'], $config['db_pass'], $config['db_name']);
-
-// Verifica se houve algum erro na conexão
-if ($conn->connect_error) {
-  die("Erro na conexão com o banco de dados: " . $conn->connect_error);
-}
-
-// Recuperar o e-mail da sessão
-$email = $_SESSION['email'];
-
-// Consulta SQL para obter informações do usuário com base no e-mail da sessão
-$sql = "SELECT user_id, nome, status, permission, saldo, transacoes_aproved FROM users WHERE email = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $email);
+// 3. Fetch Sales Statistics
+// Total de vendas (paid)
+$stmt = $conn->prepare("SELECT SUM(amount) FROM solicitacoes WHERE user_id = ? AND status = 'paid'");
+$stmt->bind_param("s", $user_id);
 $stmt->execute();
-$stmt->bind_result($user_id, $nome, $status, $permission, $saldo, $transacoes_aproved);
+$stmt->bind_result($totalSalesAmount);
 $stmt->fetch();
-
-// Armazenar user_id em uma variável
-$user_id_var = $user_id;
-
 $stmt->close();
-$conn->close();
-?>
 
+// Total de vendas pendentes
+$stmt = $conn->prepare("SELECT SUM(amount) FROM solicitacoes WHERE user_id = ? AND status = 'pending'");
+$stmt->bind_param("s", $user_id);
+$stmt->execute();
+$stmt->bind_result($pendingSalesAmount);
+$stmt->fetch();
+$stmt->close();
 
+// Contagem de vendas por status
+$stmt = $conn->prepare("SELECT COUNT(*) FROM solicitacoes WHERE user_id = ? AND status = 'paid'");
+$stmt->bind_param("s", $user_id);
+$stmt->execute();
+$stmt->bind_result($paidCount);
+$stmt->fetch();
+$stmt->close();
 
+$stmt = $conn->prepare("SELECT COUNT(*) FROM solicitacoes WHERE user_id = ? AND status = 'pending'");
+$stmt->bind_param("s", $user_id);
+$stmt->execute();
+$stmt->bind_result($pendingCount);
+$stmt->fetch();
+$stmt->close();
 
+// 4. Filters logic
+$filter_sql = "";
+$params = [$user_id];
+$types = "s";
 
-
-
-<?php
-// Incluir o arquivo de configuração do banco de dados
-include '../conectar_api_banco.php';
-
-// Criar a conexão usando as credenciais fornecidas no arquivo incluído
-$conn = new mysqli('localhost', $config['db_user'], $config['db_pass'], $config['db_name']);
-
-// Verifica se houve algum erro na conexão
-if ($conn->connect_error) {
-    die("Erro na conexão com o banco de dados: " . $conn->connect_error);
+$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+if ($search !== '') {
+    $filter_sql .= " AND (client_name LIKE ? OR client_email LIKE ? OR externalreference LIKE ?)";
+    $search_term = "%{$search}%";
+    $params[] = $search_term;
+    $params[] = $search_term;
+    $params[] = $search_term;
+    $types .= "sss";
 }
 
-// Definir o ID do usuário (presumindo que já está definido em $user_id_var)
-$user_id2 = $user_id_var;
-
-// Atualizar a consulta SQL para buscar as últimas 4 solicitações ordenadas por ID decrescente
-$sql_solicitacoes = "SELECT id, externalreference, amount, deposito_liquido, client_name, client_document, client_email, real_data, status, paymentcode 
-                     FROM solicitacoes 
-                     WHERE user_id = ? 
-                     ORDER BY id DESC 
-                     LIMIT 4";
-$stmt_solicitacoes = $conn->prepare($sql_solicitacoes);
-$stmt_solicitacoes->bind_param("s", $user_id2); // 's' para string
-$stmt_solicitacoes->execute();
-$result_solicitacoes = $stmt_solicitacoes->get_result();
-
-// Fechar a conexão
-$stmt_solicitacoes->close();
-$conn->close();
-?>
-
-
-
-
-
-
-<?php
-// Incluir o arquivo de conexão
-include '../conectar_api_banco.php';
-
-// Criar a conexão usando as credenciais fornecidas no arquivo incluído
-$conn = new mysqli('localhost', $config['db_user'], $config['db_pass'], $config['db_name']);
-
-// Verificar a conexão
-if ($conn->connect_error) {
-    die("Conexão falhou: " . $conn->connect_error);
+$date_filter = isset($_GET['date_filter']) ? $_GET['date_filter'] : '';
+if ($date_filter === 'hoje') {
+    $filter_sql .= " AND DATE(real_data) = CURDATE()";
+}
+elseif ($date_filter === '7_dias') {
+    $filter_sql .= " AND real_data >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)";
+}
+elseif ($date_filter === '30_dias') {
+    $filter_sql .= " AND real_data >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)";
+}
+elseif ($date_filter === 'mes') {
+    $filter_sql .= " AND MONTH(real_data) = MONTH(CURDATE()) AND YEAR(real_data) = YEAR(CURDATE())";
 }
 
-
-if (!isset($_SESSION['user_id'])) {
-    die("User ID não encontrado na sessão.");
+$method_filter = isset($_GET['method_filter']) ? $_GET['method_filter'] : '';
+if ($method_filter === 'pix') {
+    $filter_sql .= " AND (provider_ref LIKE '%pix%' OR externalreference LIKE '%pix%')";
+}
+elseif ($method_filter === 'cartao') {
+    $filter_sql .= " AND (provider_ref LIKE '%card%' OR provider_ref LIKE '%credit%')";
+}
+elseif ($method_filter === 'boleto') {
+    $filter_sql .= " AND (provider_ref LIKE '%boleto%' OR provider_ref LIKE '%ticket%')";
 }
 
-
-// Inicializar variáveis
-$totalPaidOut = 0;
-$totalRequests = 0;
-$sumAmountPaidOut = 0;
-$realDate = null; // Variável para a coluna real_date
-
-// Consultar o número de linhas com status = 'PAID_OUT' para o user_id
-$sqlPaidOut = "SELECT COUNT(*) AS totalPaidOut FROM solicitacoes WHERE user_id = ? AND status = 'PAID_OUT'";
-$stmtPaidOut = $conn->prepare($sqlPaidOut);
-$stmtPaidOut->bind_param("s", $user_id2);
-$stmtPaidOut->execute();
-$stmtPaidOut->bind_result($totalPaidOut);
-$stmtPaidOut->fetch();
-$stmtPaidOut->close();
-
-// Consultar o número total de linhas para o user_id
-$sqlTotalRequests = "SELECT COUNT(*) AS totalRequests FROM solicitacoes WHERE user_id = ?";
-$stmtTotalRequests = $conn->prepare($sqlTotalRequests);
-$stmtTotalRequests->bind_param("s", $user_id2);
-$stmtTotalRequests->execute();
-$stmtTotalRequests->bind_result($totalRequests);
-$stmtTotalRequests->fetch();
-$stmtTotalRequests->close();
-
-
-// Consultar a soma dos valores na coluna amount para as linhas com status = 'PAID_OUT' e user_id correspondente
-$sqlSumAmountPaidOut = "SELECT SUM(amount) AS sumAmountPaidOut FROM solicitacoes WHERE user_id = ? AND status = 'PAID_OUT'";
-$stmtSumAmountPaidOut = $conn->prepare($sqlSumAmountPaidOut);
-$stmtSumAmountPaidOut->bind_param("s", $user_id2);
-$stmtSumAmountPaidOut->execute();
-$stmtSumAmountPaidOut->bind_result($sumAmountPaidOut);
-$stmtSumAmountPaidOut->fetch();
-$stmtSumAmountPaidOut->close();
-
-
-
-
-$sqlSumDepositoLiquido = "SELECT SUM(deposito_liquido) AS sumDepositoLiquido FROM solicitacoes WHERE user_id = ? AND status = 'PAID_OUT'";
-$stmtSumDepositoLiquido = $conn->prepare($sqlSumDepositoLiquido);
-$stmtSumDepositoLiquido->bind_param("s", $user_id2);
-$stmtSumDepositoLiquido->execute();
-$stmtSumDepositoLiquido->bind_result($sumDepositoLiquido);
-$stmtSumDepositoLiquido->fetch();
-$stmtSumDepositoLiquido->close();
-
-
-// Consultar a data real mais recente (se necessário)
-$sqlRealDate = "SELECT MAX(real_data) AS realDate FROM solicitacoes WHERE user_id = ?";
-$stmtRealDate = $conn->prepare($sqlRealDate);
-$stmtRealDate->bind_param("i", $user_id);
-$stmtRealDate->execute();
-$stmtRealDate->bind_result($realDate);
-$stmtRealDate->fetch();
-$stmtRealDate->close();
-
-
-// Consultar a soma dos saques aprovados na tabela `retiradas`
-$sqlSumSaquesAprovados = "SELECT SUM(valor_liquido) AS sumSaquesAprovados FROM retiradas WHERE user_id = ? AND status = 1";
-$stmtSumSaquesAprovados = $conn->prepare($sqlSumSaquesAprovados);
-$stmtSumSaquesAprovados->bind_param("s", $user_id2);
-$stmtSumSaquesAprovados->execute();
-$stmtSumSaquesAprovados->bind_result($sumSaquesAprovados);
-$stmtSumSaquesAprovados->fetch();
-$stmtSumSaquesAprovados->close();
-
-
-// Calcular o saldo líquido
-$saldoliquido = $sumDepositoLiquido - ($sumSaquesAprovados ?: 0); // Se não houver saques aprovados, considera 0
-
-
-// Fechar a conexão
-$conn->close();
-
-
-?>
-
-
-
-
-
-
-
-
-
-<!-- Este código gera o URL base do site combinando o protocolo, o nome de domínio e o caminho do diretório -->
-<?php
-    $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME']) . '/../';
-?>
-<!-- This code generates the base URL for the website by combining the protocol, domain name, and directory path -->
-
-<!-- This code generates the base URL for the website by combining the protocol, domain name, and directory path -->
-
-<!-- This code is useful for internal styles  -->
-<?php ob_start(); ?>
-
-
-
-<?php $styles = ob_get_clean(); ?>
-<!-- This code is useful for internal styles  -->
-
-<!-- This code is useful for content -->
-<?php ob_start(); ?>
-
-
-<script>
-    // Recuperar o user_id do PHP e imprimir no console
-    const userId = <?php echo json_encode($_SESSION['user_id']); ?>;
-    console.log("User ID:", userId);
-  </script>
-
-
-
-
-            <div class="main-content app-content">
-                <div class="container-fluid">
-
-                    <!-- Start::page-header -->
-                    <div class="d-flex align-items-center justify-content-between my-4 page-header-breadcrumb flex-wrap gap-2">
-                   
-
-
-
-                     
-                    </div>
-                    <!-- End::page-header -->
-
-                    <!-- Start:: row-1 -->
-                    <div class="row">
-                        <div class="col-xxl-6 col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                            <div class="card custom-card">
-                                <div class="card-body p-4">
-                                    <div class="d-flex align-items-start justify-content-between">
-                                        <div>
-                                            <div>
-                                                <span class="d-block mb-2">DISPONIVEL + SALDO PENDENTE</span>
-                                                <h5 class="mb-4 fs-4">R$  <?php echo number_format($saldoliquido, 2, ',', '.'); ?></h5>
-                                            </div>
-                                            <span class="text-success me-2 fw-medium d-inline-block"></span><span class="text-muted">SALDO TOTAL</span>
-                                        </div>
-                                        <div>
-                                            <div class="main-card-icon success">
-                                                <div class="avatar avatar-lg bg-success-transparent border border-success border-opacity-10">
-                                                    <div class="avatar avatar-sm svg-white">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><rect width="256" height="256" fill="none"></rect><path d="M40,192a16,16,0,0,0,16,16H216a8,8,0,0,0,8-8V88a8,8,0,0,0-8-8H56A16,16,0,0,1,40,64Z" opacity="0.2"></path><path d="M40,64V192a16,16,0,0,0,16,16H216a8,8,0,0,0,8-8V88a8,8,0,0,0-8-8H56A16,16,0,0,1,40,64h0A16,16,0,0,1,56,48H192" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path><circle cx="180" cy="140" r="12"></circle></svg>   </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xxl-6 col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                            <div class="card custom-card main-card">
-                                <div class="card-body p-4">
-                                    <div class="d-flex align-items-start justify-content-between">
-                                        <div>
-                                            <div>
-                                                <span class="d-block mb-2">DISPONIVEL PARA SAQUE</span>
-                                                <h5 class="mb-4 fs-4">R$ <?php echo number_format($saldoliquido, 2, ',', '.'); ?></h5>
-                                            </div>
-                                            <span class="text-success me-2 fw-medium d-inline-block"></span><span class="text-muted">SALDO DISPONIVEL</span>
-                                        </div>
-                                        <div>
-                                        <div class="main-card-icon success">
-                                                <div class="avatar avatar-lg bg-success-transparent border border-success border-opacity-10">
-                                                    <div class="avatar avatar-sm svg-white">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256"><path d="M200,168a48.05,48.05,0,0,1-48,48H136v16a8,8,0,0,1-16,0V216H104a48.05,48.05,0,0,1-48-48,8,8,0,0,1,16,0,32,32,0,0,0,32,32h48a32,32,0,0,0,0-64H112a48,48,0,0,1,0-96h8V24a8,8,0,0,1,16,0V40h8a48.05,48.05,0,0,1,48,48,8,8,0,0,1-16,0,32,32,0,0,0-32-32H112a32,32,0,0,0,0,64h40A48.05,48.05,0,0,1,200,168Z"></path></svg>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                      
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                  
-                        
-                    </div>
-                    <!-- End:: row-1 -->
-
-
-
-
-
-
-                    
-                    <?php
-$saldoBaixo = $sumDepositoLiquido < 5;
-?>
-
-  
-
-<?php
-// Verifica se $sumDepositoLiquido está vazio ou não definido
-if (empty($sumDepositoLiquido)) {
-    $sumDepositoLiquido = 0;
+$status_filter = isset($_GET['status_filter']) ? $_GET['status_filter'] : '';
+if ($status_filter === 'pago') {
+    $filter_sql .= " AND status = 'paid'";
 }
-?>
-
-
-
-
-<!-- Start::row-1 -->
-<div class="row">
-    <div class="col-xl-6">
-        <div class="card custom-card">
-            <div class="card-body p-0">
-                <div class="p-3 d-grid border-bottom border-block-end-dashed">
-                    <button class="btn btn-primary d-flex align-items-center justify-content-center" 
-                            data-bs-toggle="modal" 
-                            data-bs-target="#addtask" 
-                            data-saldo="<?php echo htmlspecialchars($saldoliquido); ?>">
-                        <i class="ri-add-circle-line fs-16 align-middle me-1"></i> Solicitar saque
-                    </button>
-                    
-                    <!-- Modal -->
-                    <div class="modal fade" id="addtask" tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h6 class="modal-title" id="mail-ComposeLabel">Novo Saque</h6>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <form id="saqueForm" method="POST" action="insert_retirada.php" enctype="multipart/form-data">
-                                    <div class="modal-body px-4">
-                                        <div class="row gy-2">
-
-                                            <!-- Verificação de saldo baixo -->
-                                            <?php if ($saldoBaixo): ?>
-                                                <div class="alert alert-danger mt-4">
-                                                    <strong>Saldo muito baixo para realizar um saque.</strong>
-                                                </div>
-                                            <?php endif; ?>
-
-                                            <!-- Verificação de saque em processamento -->
-                                            <?php
-                                            include '../conectarbanco.php';
-                                                // Conectar ao banco de dados
-                                            $conn = new mysqli('localhost', $config['db_user'], $config['db_pass'], $config['db_name']);
-
-                                            // Verificar conexão
-                                            if ($conn->connect_error) {
-                                                die("Falha na conexão: " . $conn->connect_error);
-                                            }
-                                            // Consultar se já existe um saque em processamento
-                                            $sqlCheck = "SELECT COUNT(*) as count FROM retiradas WHERE user_id = ? AND status = '0'";
-                                            $stmtCheck = $conn->prepare($sqlCheck);
-                                            $stmtCheck->bind_param("s", $user_id);
-                                            $stmtCheck->execute();
-                                            $stmtCheck->bind_result($count);
-                                            $stmtCheck->fetch();
-                                            $stmtCheck->close();
-
-                                            if ($count > 0): ?>
-                                                <div class="alert alert-warning mt-4">
-                                                    <strong>Já existe um saque em processamento. Aguarde a conclusão.</strong>
-                                                </div>
-                                            <?php endif; ?>
-
-                                            <!-- Exibição do saldo disponível -->
-                                            <div class="alert alert-info mt-4">
-                                                <ul>
-                                                    <li><strong>DISPONÍVEL PARA SAQUE:</strong> R$: <?php echo number_format($saldoliquido, 2, ',', '.'); ?></li>
-                                                </ul>
-                                            </div>
-
-                                            <!-- Campo de valor -->
-                                            <div class="col-xl-12">
-                                                <label for="valor" class="form-label">Valor</label>
-                                                <input type="number" step="0.01" class="form-control" id="valor" name="valor" placeholder="Valor" required>
-                                                <div id="valorError" class="text-danger mt-2" style="display: none;">Saldo insuficiente para o valor solicitado.</div>
-                                            </div>
-
-                                            <div class="col-xl-12">
-                                                <input type="hidden" id="tipo_chave" name="tipo_chave" value="CPF">
-                                                <label class="form-label">Tipo de Chave</label>
-                                                <input type="text" class="form-control" value="CPF" readonly>
-                                            </div>
-
-                                            <div class="col-xl-12">
-                                                <label for="chave" class="form-label">Chave PIX:</label>
-                                                <input type="text" class="form-control" id="chave" name="chave" placeholder="Chave" required>
-                                            </div>
-
-                                            <!-- Campo oculto para o ID do usuário -->
-                                            <input type="hidden" id="user_id" name="user_id" value="<?php echo htmlspecialchars($email); ?>">
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
-                                        <button type="submit" class="btn btn-primary" <?php echo ($count > 0) ? 'disabled' : ''; ?>>Solicitar</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Explicação sobre taxas padrão -->
-                <div class="alert alert-info mt-4">
-                    <ul>
-                        <li><strong>Taxa de saque:</strong> R$: <?php echo htmlspecialchars($taxa_cash_out); ?></li>
-                        <li><strong>Limite Pessoa física:</strong> R$ 5.000,00 /mês</li>
-                        <li><strong>Limite Pessoa jurídica:</strong> Sem limite</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- End::row-1 -->
-
-<script>
-document.getElementById('saqueForm').addEventListener('submit', function(event) {
-    var saldo = <?php echo $saldoliquido; ?>; // Corrigido para usar PHP para obter o saldo
-    var valor = parseFloat(document.getElementById('valor').value);
-    var valorError = document.getElementById('valorError');
-    
-    // Verifica se o saldo é zero ou se o valor solicitado é maior que o saldo
-    if (saldo <= 0) {
-        valorError.textContent = 'Saldo insuficiente para realizar um saque.';
-        valorError.style.display = 'block';
-        event.preventDefault(); // Evita o envio do formulário
-    } else if (valor > saldo) {
-        valorError.textContent = 'Saldo insuficiente para o valor solicitado.';
-        valorError.style.display = 'block';
-        event.preventDefault(); // Evita o envio do formulário
-    } else {
-        valorError.style.display = 'none'; // Oculta a mensagem de erro se tudo estiver certo
-    }
-});
-</script>
-
-
-
-
-
-
-
-
-<?php
-
-
-// Verificar se o e-mail está presente na sessão
-if (!isset($_SESSION['email'])) {
-    // Se o e-mail não estiver presente na sessão, redirecione para outra página
-    header("Location: ../");
-    exit; // Certifique-se de sair do script após o redirecionamento
+elseif ($status_filter === 'pendente') {
+    $filter_sql .= " AND status = 'pending'";
+}
+elseif ($status_filter === 'cancelado') {
+    $filter_sql .= " AND (status = 'cancelled' OR status = 'canceled')";
 }
 
-include '../conectarbanco.php';
-
-// Obter o e-mail da sessão
-$email = $_SESSION['email'];
-
-// Conectar ao banco de dados
-$conn = new mysqli('localhost', $config['db_user'], $config['db_pass'], $config['db_name']);
-
-// Verifique a conexão
-if ($conn->connect_error) {
-    die("Falha na conexão: " . $conn->connect_error);
-}
-
-// Obter o user_id com base no e-mail da sessão
-$sqlUserId = $conn->prepare("SELECT user_id FROM users WHERE email = ?");
-$sqlUserId->bind_param('s', $email);
-$sqlUserId->execute();
-$resultUserId = $sqlUserId->get_result();
-
-if ($resultUserId->num_rows == 0) {
-    echo "Usuário não encontrado.";
-    $sqlUserId->close();
-    $conn->close();
-    exit;
-}
-
-$userRow = $resultUserId->fetch_assoc();
-$user_id = $userRow['user_id'];
-$sqlUserId->close();
-
-// Configurações de paginação
-$limit = 10; // Número de registros por página
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1; // Página atual
+// 5. Pagination & History
+$limit = 10;
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $limit;
 
-// Consulta para obter o número total de registros com user_id igual ao e-mail da sessão
-$totalResult = $conn->prepare("SELECT COUNT(*) AS total FROM retiradas WHERE user_id = ?");
-$totalResult->bind_param('s', $user_id);
-$totalResult->execute();
-$totalRow = $totalResult->get_result()->fetch_assoc();
-$totalRecords = $totalRow['total'];
+// Total records
+$count_sql = "SELECT COUNT(*) FROM solicitacoes WHERE user_id = ?" . $filter_sql;
+$stmt_count = $conn->prepare($count_sql);
+if (!empty($params) && count($params) > 1) {
+    $stmt_count->bind_param(substr($types, 0, count($params)), ...$params);
+}
+else {
+    $stmt_count->bind_param("s", $user_id);
+}
+$stmt_count->execute();
+$stmt_count->bind_result($totalRecords);
+$stmt_count->fetch();
+$stmt_count->close();
+
 $totalPages = ceil($totalRecords / $limit);
 
-// Consulta para obter os registros com user_id igual ao e-mail da sessão
-$sql = "SELECT id, referencia, valor, valor_liquido, tipo_chave, chave, status, data_solicitacao, data_pagamento, taxa_cash_out 
-        FROM retiradas 
-        WHERE user_id = ?
-        ORDER BY data_solicitacao DESC 
-        LIMIT ? OFFSET ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("sii", $user_id, $limit, $offset);
+// Fetch Sales History
+$sql_history = "SELECT id, externalreference, amount, client_name, client_email, status, real_data, provider_ref 
+                FROM solicitacoes 
+                WHERE user_id = ?" . $filter_sql . " 
+                ORDER BY real_data DESC 
+                LIMIT ? OFFSET ?";
+$stmt_history = $conn->prepare($sql_history);
+
+// Prepare parameters for history query
+$history_params = $params;
+$history_params[] = $limit;
+$history_params[] = $offset;
+$history_types = $types . "ii";
+
+$stmt_history->bind_param($history_types, ...$history_params);
+$stmt_history->execute();
+$result_history = $stmt_history->get_result();
+
+$baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME']) . '/../';
+
+// Calcula Metricas
+$ticketMedio = $paidCount > 0 ? $totalSalesAmount / $paidCount : 0;
+$approvalRate = $total_transacoes > 0 ? ($paidCount / $total_transacoes) * 100 : 0;
+
+ob_start();
+?>
+<style>
+    .status-pago {
+        background-color: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+    }
+    .status-pendente {
+        background-color: rgba(245, 158, 11, 0.1);
+        color: #f59e0b;
+    }
+    .status-cancelado {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+    }
+    .glass-card {
+        background: linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(26, 26, 26, 0.8) 100%);
+        border: 1px solid rgba(168, 85, 247, 0.2);
+    }
+    ::-webkit-scrollbar {
+        width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #2E2E2E;
+        border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: #a855f7;
+    }
+</style>
+
+<!-- Header Section -->
+<header class="flex flex-wrap items-center justify-between gap-4 mb-8 mt-2">
+    <div class="space-y-1">
+        <h2 class="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-slate-50">Minhas Vendas</h2>
+        <p class="text-slate-500 dark:text-slate-400 text-sm">Gerencie seu histórico de vendas e transações em tempo real.</p>
+    </div>
+</header>
+
+<?php
+// Calculate growth for Total Vendas (Current month vs Last month)
+$currentMonthPaid = 0;
+$lastMonthPaid = 0;
+// Current month
+$stmt = $conn->prepare("SELECT SUM(amount) FROM solicitacoes WHERE user_id = ? AND status = 'paid' AND MONTH(real_data) = MONTH(CURDATE()) AND YEAR(real_data) = YEAR(CURDATE())");
+$stmt->bind_param("s", $user_id);
 $stmt->execute();
-$result = $stmt->get_result();
+$stmt->bind_result($currentMonthPaid);
+$stmt->fetch();
+$stmt->close();
+// Last month
+$stmt = $conn->prepare("SELECT SUM(amount) FROM solicitacoes WHERE user_id = ? AND status = 'paid' AND MONTH(real_data) = MONTH(DATE_SUB(CURDATE(), INTERVAL 1 MONTH)) AND YEAR(real_data) = YEAR(DATE_SUB(CURDATE(), INTERVAL 1 MONTH))");
+$stmt->bind_param("s", $user_id);
+$stmt->execute();
+$stmt->bind_result($lastMonthPaid);
+$stmt->fetch();
+$stmt->close();
+
+if ($lastMonthPaid > 0) {
+    $salesGrowth = (($currentMonthPaid - $lastMonthPaid) / $lastMonthPaid) * 100;
+}
+else if ($currentMonthPaid > 0) {
+    $salesGrowth = 100; // 100% growth if last month was 0
+}
+else {
+    $salesGrowth = 0;
+}
+$growthIcon = $salesGrowth >= 0 ? 'trending_up' : 'trending_down';
+$growthColor = $salesGrowth >= 0 ? 'text-emerald-400 bg-emerald-400/10' : 'text-red-400 bg-red-400/10';
+
+// Calculate Progress Bar for Total Vendas (Paid vs Total Amount Attempted)
+$totalAttemptedAmount = $totalSalesAmount + $pendingSalesAmount;
+$salesProgressPct = $totalAttemptedAmount > 0 ? ($totalSalesAmount / $totalAttemptedAmount) * 100 : 0;
+
+// Ticket Medio Chart Data (Last 5 days average ticket)
+$ticketBars = [];
+$maxTicket = 1; // Prevent division by zero
+for ($i = 4; $i >= 0; $i--) {
+    $stmt = $conn->prepare("SELECT IFNULL(SUM(amount)/COUNT(*), 0) FROM solicitacoes WHERE user_id = ? AND status = 'paid' AND DATE(real_data) = DATE_SUB(CURDATE(), INTERVAL ? DAY)");
+    $stmt->bind_param("si", $user_id, $i);
+    $stmt->execute();
+    $stmt->bind_result($dayTicketAvg);
+    $stmt->fetch();
+    $stmt->close();
+    $ticketBars[] = $dayTicketAvg;
+    if ($dayTicketAvg > $maxTicket)
+        $maxTicket = $dayTicketAvg;
+}
 ?>
 
-<!-- Start::row-2 -->
-<div class="row">
-    <div class="col-xl-12">
-        <div class="card custom-card">
-            <div class="card-header justify-content-between">
-                <div class="card-title">
-                    Retiradas
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table text-nowrap table-bordered">
-                        <thead>
-                            <tr>
-                               
-                                <th scope="col">Valor</th>
-                                <th scope="col">Valor Líquido</th>
-                                <th scope="col">Tipo de Chave</th>
-                                <th scope="col">Chave</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Data de Solicitação</th>
-                            
-                              
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php
-                            if ($result->num_rows > 0) {
-                                // Itera sobre os resultados e exibe cada linha na tabela
-                                while ($row = $result->fetch_assoc()) {
-                                    $statusBadge = $row['status'] == '1' ? 'bg-success-transparent' : 'bg-light text-dark';
-                                    $statusText = $row['status'] == '1' ? 'Pago' : 'Pendente';
-                                    echo "<tr>";
-                                  
-                                    echo "<td>{$row['valor']}</td>";
-                                    echo "<td>{$row['valor_liquido']}</td>";
-                                    echo "<td>{$row['tipo_chave']}</td>";
-                                    echo "<td>{$row['chave']}</td>";
-                                    echo "<td><span class='badge {$statusBadge}'>{$statusText}</span></td>";
-                                    echo "<td>{$row['data_solicitacao']}</td>";
-                                  
-                                   
-                                    echo "</tr>";
-                                }
-                            } else {
-                                echo "<tr><td colspan='9'>Nenhum registro encontrado</td></tr>";
-                            }
-                            $stmt->close();
-                            $conn->close();
-                            ?>
-                        </tbody>
-                    </table>
-                </div>
-                <!-- Paginação -->
-                <nav aria-label="Page navigation">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
-                            <a class="page-link" href="?page=<?= $page - 1 ?>" aria-label="Previous">
-                                <span aria-hidden="true">&laquo;</span>
-                            </a>
-                        </li>
-                        <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                            <li class="page-item <?= ($i == $page) ? 'active' : '' ?>">
-                                <a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a>
-                            </li>
-                        <?php endfor; ?>
-                        <li class="page-item <?= ($page >= $totalPages) ? 'disabled' : '' ?>">
-                            <a class="page-link" href="?page=<?= $page + 1 ?>" aria-label="Next">
-                                <span aria-hidden="true">&raquo;</span>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
+<!-- Stats Grid -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="glass-card rounded-xl p-6 shadow-xl shadow-black/50">
+        <div class="flex justify-between items-start mb-4">
+            <p class="text-slate-400 text-sm font-medium uppercase tracking-wider">Total Vendas</p>
+            <span class="flex items-center <?php echo $growthColor; ?> text-xs font-bold px-2 py-1 rounded-full">
+                <span class="material-icons-round text-[14px] mr-1"><?php echo $growthIcon; ?></span>
+                <?php echo number_format(abs($salesGrowth), 1, ',', '.'); ?>%
+            </span>
+        </div>
+        <h3 class="text-3xl font-extrabold text-slate-50">R$ <?php echo number_format($totalSalesAmount ?? 0, 2, ',', '.'); ?></h3>
+        <div class="mt-4 h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+            <div class="h-full bg-primary rounded-full shadow-[0_0_8px_rgba(168,85,247,0.5)]" style="width: <?php echo $salesProgressPct; ?>%"></div>
         </div>
     </div>
-</div>
-<!-- End::row-2 -->
-
-
-
-
-
-
-                   
-
-                </div>
+    <div class="glass-card rounded-xl p-6 shadow-xl shadow-black/50">
+        <div class="flex justify-between items-start mb-4">
+            <p class="text-slate-400 text-sm font-medium uppercase tracking-wider">Ticket Médio</p>
+            <span class="flex items-center <?php echo $growthColor; ?> text-xs font-bold px-2 py-1 rounded-full text-transparent bg-transparent" style="visibility: hidden;">
+                <!-- Hide growth for ticket medio for now, display generic info if needed -->
+            </span>
+        </div>
+        <h3 class="text-3xl font-extrabold text-slate-50">R$ <?php echo number_format($ticketMedio, 2, ',', '.'); ?></h3>
+        <div class="mt-4 flex gap-1 items-end h-14">
+            <?php foreach ($ticketBars as $index => $avg):
+    $heightPct = ($avg / $maxTicket) * 100;
+    $heightPct = max(20, $heightPct); // Minimum 20% height for visibility
+    if ($avg == 0)
+        $heightPct = 10;
+    $opacityClass = $index == 4 ? 'bg-primary shadow-[0_0_8px_rgba(168,85,247,0.5)]' : 'bg-primary/' . (20 + ($index * 10)); // Gradually more solid
+?>
+                <div class="w-full rounded-sm <?php echo $opacityClass; ?>" style="height: <?php echo $heightPct; ?>%;"></div>
+            <?php
+endforeach; ?>
+        </div>
+    </div>
+    <div class="glass-card rounded-xl p-6 shadow-xl shadow-black/50">
+        <div class="flex justify-between items-start mb-4">
+            <p class="text-slate-400 text-sm font-medium uppercase tracking-wider">Taxa de Aprovação</p>
+            <span class="flex items-center text-emerald-400 text-xs font-bold px-2 py-1 bg-emerald-400/10 rounded-full" style="visibility:hidden">
+            </span>
+        </div>
+        <div class="flex items-end justify-between">
+            <h3 class="text-3xl font-extrabold text-slate-50"><?php echo number_format($approvalRate, 1, ',', '.'); ?>%</h3>
+            <div class="relative w-12 h-12">
+                <svg class="w-full h-full transform -rotate-90">
+                    <circle class="text-slate-800" cx="24" cy="24" fill="transparent" r="20" stroke="currentColor" stroke-width="4"></circle>
+                    <circle class="text-primary transition-all duration-1000 ease-out" cx="24" cy="24" fill="transparent" r="20" stroke="currentColor" stroke-dasharray="125.6" stroke-dashoffset="<?php echo 125.6 - (125.6 * ($approvalRate / 100)); ?>" stroke-width="4"></circle>
+                </svg>
             </div>
+        </div>
+        <p class="mt-2 text-xs text-slate-500 italic">Conversão de vendas</p>
+    </div>
+</section>
 
-<?php $content = ob_get_clean(); ?>
-<!-- This code is useful for content -->
+<!-- Filters Section -->
+<form method="GET" action="" id="filterForm">
+    <section class="flex flex-col md:flex-row gap-4 mb-6">
+        <div class="relative flex-1 group">
+            <span class="material-icons-round absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">search</span>
+            <input name="search" value="<?php echo htmlspecialchars($search); ?>" class="w-full pl-12 pr-4 py-3 rounded-lg border-2 border-slate-200 dark:border-primary/20 bg-white dark:bg-surface-dark focus:ring-0 focus:border-primary text-slate-900 dark:text-slate-100 placeholder:text-slate-500 transition-all" placeholder="Buscar por cliente, e-mail ou referência..." type="text"/>
+            
+            <?php if ($search !== ''): ?>
+            <a href="?" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-500 transition-colors">
+                <span class="material-icons-round text-sm">close</span>
+            </a>
+            <?php
+endif; ?>
+        </div>
+        <div class="flex gap-3 flex-wrap">
+            <div class="relative">
+                <select name="date_filter" onchange="document.getElementById('filterForm').submit();" class="appearance-none flex items-center gap-2 pl-4 pr-10 py-3 rounded-lg border-2 border-slate-200 dark:border-primary/20 bg-white dark:bg-surface-dark text-slate-700 dark:text-slate-300 text-sm font-medium hover:bg-slate-50 dark:hover:bg-surface-dark/80 transition-colors min-w-[140px] focus:ring-0 cursor-pointer">
+                    <option value="">Qualquer Data</option>
+                    <option value="hoje" <?php if ($date_filter === 'hoje')
+    echo 'selected'; ?>>Hoje</option>
+                    <option value="7_dias" <?php if ($date_filter === '7_dias')
+    echo 'selected'; ?>>Últimos 7 dias</option>
+                    <option value="30_dias" <?php if ($date_filter === '30_dias')
+    echo 'selected'; ?>>Últimos 30 dias</option>
+                    <option value="mes" <?php if ($date_filter === 'mes')
+    echo 'selected'; ?>>Este Mês</option>
+                </select>
+                <span class="material-icons-round text-[18px] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">expand_more</span>
+            </div>
+            <div class="relative">
+                <select name="method_filter" onchange="document.getElementById('filterForm').submit();" class="appearance-none flex items-center gap-2 pl-4 pr-10 py-3 rounded-lg border-2 border-slate-200 dark:border-primary/20 bg-white dark:bg-surface-dark text-slate-700 dark:text-slate-300 text-sm font-medium hover:bg-slate-50 dark:hover:bg-surface-dark/80 transition-colors min-w-[140px] focus:ring-0 cursor-pointer">
+                    <option value="">Qualquer Método</option>
+                    <option value="pix" <?php if ($method_filter === 'pix')
+    echo 'selected'; ?>>Pix</option>
+                    <option value="cartao" <?php if ($method_filter === 'cartao')
+    echo 'selected'; ?>>Cartão</option>
+                    <option value="boleto" <?php if ($method_filter === 'boleto')
+    echo 'selected'; ?>>Boleto</option>
+                </select>
+                <span class="material-icons-round text-[18px] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">expand_more</span>
+            </div>
+            <div class="relative">
+                <select name="status_filter" onchange="document.getElementById('filterForm').submit();" class="appearance-none flex items-center gap-2 pl-4 pr-10 py-3 rounded-lg border-2 border-slate-200 dark:border-primary/20 bg-white dark:bg-surface-dark text-slate-700 dark:text-slate-300 text-sm font-medium hover:bg-slate-50 dark:hover:bg-surface-dark/80 transition-colors min-w-[140px] focus:ring-0 cursor-pointer">
+                    <option value="">Qualquer Status</option>
+                    <option value="pago" <?php if ($status_filter === 'pago')
+    echo 'selected'; ?>>Pago</option>
+                    <option value="pendente" <?php if ($status_filter === 'pendente')
+    echo 'selected'; ?>>Pendente</option>
+                    <option value="cancelado" <?php if ($status_filter === 'cancelado')
+    echo 'selected'; ?>>Cancelado</option>
+                </select>
+                <span class="material-icons-round text-[18px] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">expand_more</span>
+            </div>
+        </div>
+    </section>
+</form>
 
-<!-- This code is useful for internal scripts  -->
-<?php ob_start(); ?>
+<!-- Sales Table Container -->
+<section class="bg-white dark:bg-surface-dark rounded-xl shadow-2xl shadow-black/20 border border-slate-200 dark:border-primary/5 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-slate-50 dark:bg-black/40 border-b border-slate-200 dark:border-primary/10">
+                    <th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Data / Hora</th>
+                    <th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Cliente</th>
+                    <th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Método</th>
+                    <th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest text-right">Valor</th>
+                    <th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest text-center">Status</th>
+                    <th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest text-right">Ações</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 dark:divide-primary/5">
+                <?php if ($result_history->num_rows > 0): ?>
+                    <?php while ($row = $result_history->fetch_assoc()): ?>
+                        <?php
+        $statusClass = 'status-pendente';
+        $statusLabel = 'Pendente';
 
-        <!-- Apex Charts JS -->
-        <script src="<?php echo $baseUrl; ?>/assets/libs/apexcharts/apexcharts.min.js"></script>
-        
- 
+        if ($row['status'] === 'paid') {
+            $statusClass = 'status-pago';
+            $statusLabel = 'Pago';
+        }
+        elseif ($row['status'] === 'cancelled' || $row['status'] === 'canceled') {
+            $statusClass = 'status-cancelado';
+            $statusLabel = 'Cancelado';
+        }
 
-<?php $scripts = ob_get_clean(); ?>
-<!-- This code is useful for internal scripts  -->
+        // Tentar deduzir o método do provedor
+        $methodName = 'Indisponível';
+        $methodIcon = 'help_outline';
+        $provTitle = $row['provider_ref'] ?? '';
 
-<!-- This code use for render base file -->
-<?php include '../layouts/base.php'; ?>
-<!-- This code use for render base file -->
+        if (stripos($provTitle, 'pix') !== false || stripos($row['externalreference'], 'pix') !== false) {
+            $methodName = 'Pix';
+            $methodIcon = 'qr_code_2';
+        }
+        else if (stripos($provTitle, 'card') !== false || stripos($provTitle, 'credit') !== false) {
+            $methodName = 'Cartão';
+            $methodIcon = 'credit_card';
+        }
+        else if (stripos($provTitle, 'boleto') !== false || stripos($provTitle, 'ticket') !== false) {
+            $methodName = 'Boleto';
+            $methodIcon = 'barcode';
+        }
+        else {
+            $methodName = 'Pix'; // Por padrão deixar Pix
+            $methodIcon = 'qr_code_2';
+        }
+?>
+                        <tr class="hover:bg-slate-50 dark:hover:bg-[#252525] transition-colors">
+                            <td class="px-6 py-4">
+                                <div class="flex flex-col">
+                                    <span class="text-sm font-semibold dark:text-slate-200"><?php echo date('d/m/Y', strtotime($row['real_data'])); ?></span>
+                                    <span class="text-xs text-slate-500"><?php echo date('H:i:s', strtotime($row['real_data'])); ?></span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex flex-col">
+                                    <span class="text-sm font-semibold dark:text-slate-200"><?php echo htmlspecialchars($row['client_name'] ?: 'Não Informado'); ?></span>
+                                    <span class="text-xs text-slate-500"><?php echo htmlspecialchars($row['client_email'] ?: 'Sem e-mail'); ?></span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-icons-round text-[20px] text-slate-400"><?php echo $methodIcon; ?></span>
+                                    <span class="text-sm font-medium dark:text-slate-400"><?php echo $methodName; ?></span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <span class="text-sm font-extrabold text-primary">R$ <?php echo number_format($row['amount'], 2, ',', '.'); ?></span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex justify-center">
+                                    <span class="<?php echo $statusClass; ?> text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-tighter"><?php echo $statusLabel; ?></span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <button class="p-1 hover:bg-slate-200 dark:hover:bg-primary/20 rounded transition-colors">
+                                    <span class="material-icons-round text-slate-400">more_vert</span>
+                                </button>
+                            </td>
+                        </tr>
+                    <?php
+    endwhile; ?>
+                <?php
+else: ?>
+                    <tr>
+                        <td colspan="6" class="px-6 py-12 text-center text-slate-500">
+                            Nenhuma venda encontrada.
+                        </td>
+                    </tr>
+                <?php
+endif; ?>
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    <div class="px-6 py-4 border-t border-slate-200 dark:border-primary/10 flex items-center justify-between">
+        <p class="text-sm text-slate-500">Página <span class="font-bold dark:text-slate-300"><?php echo $page; ?></span> de <span class="font-bold dark:text-slate-300"><?php echo max(1, $totalPages); ?></span></p>
+        <div class="flex gap-2">
+            <?php
+// Preserve GET query parameters for pagination
+$queryParams = $_GET;
 
- 
+// Generate link for previous page
+$queryParams['page'] = max(1, $page - 1);
+$prevLink = '?' . http_build_query($queryParams);
+?>
+            <a href="<?php echo $prevLink; ?>" class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-primary/20 bg-white dark:bg-surface-dark <?php echo($page <= 1) ? 'text-slate-400 cursor-not-allowed pointer-events-none' : 'text-slate-600 dark:text-slate-300 hover:border-primary transition-all'; ?>">
+                <span class="material-icons-round text-[20px]">chevron_left</span>
+            </a>
+            
+            <?php
+// Generate link for next page
+$queryParams['page'] = min($totalPages, $page + 1);
+$nextLink = '?' . http_build_query($queryParams);
+?>
+            <a href="<?php echo $nextLink; ?>" class="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-primary/20 bg-white dark:bg-surface-dark <?php echo($page >= $totalPages) ? 'text-slate-400 cursor-not-allowed pointer-events-none' : 'text-slate-600 dark:text-slate-300 hover:border-primary transition-all'; ?>">
+                <span class="material-icons-round text-[20px]">chevron_right</span>
+            </a>
+        </div>
+    </div>
+</section>
 
-
-
-
-
-
-
-
-<!-- Internal Apex Area Charts JS -->
-<script src="../assets/js/apexcharts-area.js"></script>
-
-
-
-
-
-
+<?php
+$content = ob_get_clean();
+include '../layouts/base_new.php';
+$conn->close();
+?>

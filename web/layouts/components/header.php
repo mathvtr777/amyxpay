@@ -11,10 +11,10 @@
             <div class="header-element">
                 <div class="horizontal-logo">
                     <a href="../home" class="header-logo">
-                        <img src="../img/URANOPAY-black.png" alt="logo" class="desktop-logo">
-                        <img src="../img/URANOPAY-black.png" alt="logo" class="toggle-logo">
-                        <img src="../img/URANOPAY-branca.png" alt="logo" class="desktop-dark">
-                        <img src="../img/URANOPAY-branca.png" alt="logo" class="toggle-dark">
+                        <img src="../img/zyro-logo-black.png" alt="logo" class="desktop-logo">
+                        <img src="../img/zyro-logo-black.png" alt="logo" class="toggle-logo">
+                        <img src="../img/zyro-logo-black.png" alt="logo" class="desktop-dark" style="filter: brightness(0) invert(1);">
+                        <img src="../img/zyro-logo-black.png" alt="logo" class="toggle-dark" style="filter: brightness(0) invert(1);">
                     </a>
                 </div>
             </div>

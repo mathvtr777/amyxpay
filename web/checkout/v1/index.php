@@ -18,7 +18,7 @@ if (isset($_GET['id'])) {
   $id = filter_var($id, FILTER_SANITIZE_STRING);
 
   // Construa a consulta SQL para procurar o id na coluna url_checkout
-  $sql = "SELECT id, name_produto, valor, logo_produto, banner_produto, obrigado_page, key_gateway, ativo, email
+  $sql = "SELECT id, name_produto, valor, logo_produto, banner_produto, obrigado_page, ativo, email, user_provider_id
             FROM checkout_build
             WHERE url_checkout LIKE ?";
 
@@ -2486,7 +2486,7 @@ Valor total: <?php echo "R$ " . number_format(isset($row['valor']) ? $row['valor
             </div>
 
             <div class="chave-api" style="display: none;">
-              <input type="text" placeholder="Chave key" id="clientId" value="<?php echo htmlspecialchars($row['key_gateway']); ?>">
+              <input type="hidden" id="checkoutId" value="<?php echo htmlspecialchars($row['id']); ?>">
             </div>
 
           </div>
@@ -2536,91 +2536,118 @@ Valor total: <?php echo "R$ " . number_format(isset($row['valor']) ? $row['valor
   var intervalId;
 
   async function generateQRCode() {
-    var name = document.getElementById('user_name').value || "Uranopay";
-    var cpf = document.getElementById('document').value.replace(/\D/g, ''); // Somente números
-    var amount = document.getElementById('valuedeposit').value;
+    var btn = document.querySelector('.submitCheckoutButton');
+    // id="name" is the actual field ID in the HTML
+    var name = (document.getElementById('name') || {}).value || '';
+    // CPF field may be commented out — try id="document" first, then phone as fallback
+    var cpfEl = document.getElementById('document');
+    var phoneEl = document.getElementById('userPhone');
+    var cpf = cpfEl ? cpfEl.value.replace(/\D/g, '') : (phoneEl ? phoneEl.value.replace(/\D/g, '') : '00000000000');
+    if (!cpf) cpf = '00000000000'; // placeholder if no CPF/phone filled
+    var amountRaw = (document.getElementById('valuedeposit') || {}).value || '0';
+    // amount may be formatted as "10,00" — normalize to float
+    var amount = parseFloat(amountRaw.replace(/\./g, '').replace(',', '.'));
+    var checkoutId = (document.getElementById('checkoutId') || {}).value || '';
+
+    if (!name || !checkoutId || amount <= 0) {
+      alert('Por favor, preencha seu nome antes de continuar.');
+      return;
+    }
+
+    // Loading state
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<span style="display:inline-block;width:18px;height:18px;border:3px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:8px"></span>Processando...';
+    }
 
     var payload = {
-      "name": name,
-      "document": cpf,
-      "amount": parseFloat(amount)
+      name:        name,
+      document:    cpf,
+      amount:      amount,
+      checkout_id: checkoutId
     };
 
     try {
-      const response = await fetch('apiUrl', { // Seu endpoint PHP
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const response = await fetch('/uranoPAY/web/checkout/process_payment.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
 
       const data = await response.json();
-      document.getElementById('apiResponse').innerHTML = JSON.stringify(data);
 
-      if (data.paymentCode) {
-        paymentCode = data.paymentCode;
-        transactionId = data.idTransaction;
+      if (data.success && data.paymentCode) {
+        paymentCode   = data.paymentCode;
+        transactionId = data.transactionId;
 
-        document.getElementById('qr-code-text').textContent = paymentCode;
+        // Show QR code section, hide form
+        document.querySelectorAll('.properties').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.box1').forEach(el => el.style.display = 'block');
 
-        document.querySelectorAll('.properties').forEach(function (element) {
-          element.style.display = 'none';
-        });
-        document.querySelectorAll('.box1').forEach(function (element) {
-          element.style.display = 'block';
-        });
+        // Set pix copy-paste text
+        var qrText = document.getElementById('qr-code-text');
+        if (qrText) qrText.textContent = paymentCode;
 
-        document.getElementById('qrcode').innerHTML = "";
-        var qrcode = new QRCode(document.getElementById('qrcode'), {
-          text: paymentCode,
-          width: 256,
-          height: 256
-        });
+        // Render QR code image
+        var qrcodeEl = document.getElementById('qrcode');
+        if (qrcodeEl) {
+          qrcodeEl.innerHTML = '';
+          if (data.qrcodeImage) {
+            qrcodeEl.innerHTML = '<img src="' + data.qrcodeImage + '" style="width:256px;height:256px;">';
+          } else {
+            new QRCode(qrcodeEl, { text: paymentCode, width: 256, height: 256 });
+          }
+          qrcodeEl.style.display = 'block';
+        }
 
-        document.getElementById('qrcode').style.display = 'block';
-
-        // Inicia a verificação do pagamento a cada 2 segundos
-        intervalId = setInterval(checkPaymentStatus, 2000);
+        // Start polling
+        intervalId = setInterval(checkPaymentStatus, 3000);
       } else {
-        console.error("Erro na solicitação:", data.error || data.message);
+        var errMsg = data.error || 'Erro ao gerar pagamento. Tente novamente.';
+        alert(errMsg);
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<span class="inherit">Comprar e receber agora</span>';
+        }
       }
     } catch (error) {
-      console.error("Erro na solicitação:", error);
+      console.error('Erro na solicitação:', error);
+      alert('Erro de conexão. Verifique sua internet e tente novamente.');
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<span class="inherit">Comprar e receber agora</span>';
+      }
     }
   }
 
   async function checkPaymentStatus() {
-    // Ajuste para o seu endpoint PHP de verificação de status
-    var apiUrl = '/api/v1/webhook/';
-    var payload = {
-      "idtransaction": transactionId
-    };
-
+    if (!transactionId) return;
     try {
-      const response = await fetch(apiUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload)
+      const response = await fetch('/web/checkout/check_status.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ transactionId: transactionId })
       });
 
       const data = await response.json();
-      document.getElementById('apiResponse').innerHTML = JSON.stringify(data);
 
-      if (data.status === "PAID_OUT") {
-        clearInterval(intervalId); // Para a verificação quando o pagamento for confirmado
-        window.location.replace("<?php echo htmlspecialchars($row['obrigado_page']); ?>");
-        alert("Pagamento confirmado!");
-      } else if (data.status === "WAITING_FOR_APPROVAL") {
-        console.log("Aguardando aprovação...");
+      if (data.status === 'paid') {
+        clearInterval(intervalId);
+        var thankYouPage = '<?php echo htmlspecialchars($row["obrigado_page"] ?? ""); ?>';
+        if (thankYouPage) {
+          window.location.replace(thankYouPage);
+        } else {
+          alert('Pagamento confirmado! Obrigado pela sua compra.');
+        }
       }
     } catch (error) {
-      console.error("Erro na verificação do pagamento:", error);
+      console.error('Erro na verificação do pagamento:', error);
     }
   }
 </script>
+<style>
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
 
 <script>
 // Função para formatar o campo CPF no formato XXX.XXX.XXX-XX

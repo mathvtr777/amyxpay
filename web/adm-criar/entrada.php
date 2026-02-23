@@ -1,4 +1,4 @@
-
+﻿
 <?php
 session_start();
 if (!isset($_SESSION['email'])) {
@@ -311,7 +311,7 @@ $totalRecords = $totalRow['total'];
 $totalPages = ceil($totalRecords / $limit);
 
 // Consulta para obter os registros com descricao_transacao 'entrada-criada'
-$sql = "SELECT id, user_id, externalreference, amount, client_name, client_document, client_email, real_data, status, qrcode_pix, paymentcode, idtransaction, paymentCodeBase64, adquirente_ref, taxa_cash_in, deposito_liquido, taxa_pix_cash_in_adquirente, taxa_pix_cash_in_valor_fixo, client_telefone, executor_ordem, descricao_transacao
+$sql = "SELECT id, user_id, externalreference, amount, client_name, client_document, client_email, real_data, status, qrcode_pix, paymentcode, idtransaction, paymentCodeBase64, adquirente_ref, amount, client_telefone, executor_ordem, descricao_transacao
         FROM solicitacoes 
         WHERE descricao_transacao = 'entrada-criada'
         ORDER BY real_data DESC 

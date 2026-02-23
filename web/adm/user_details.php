@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 
 // Verificar se o e-mail está presente na sessão
@@ -76,11 +76,11 @@ if ($conn->connect_error) {
 // Recuperar o e-mail da sessão
 $email = $_SESSION['email'];
 
-$sql = "SELECT user_id, nome, status, permission, saldo, transacoes_aproved FROM users WHERE email = ?";
+$sql = "SELECT user_id, nome, status, permission, transacoes_aproved FROM users WHERE email = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $email);
 $stmt->execute();
-$stmt->bind_result($user_id, $nome, $status, $permission, $saldo, $transacoes_aproved);
+$stmt->bind_result($user_id, $nome, $status, $permission, $transacoes_aproved);
 $stmt->fetch();
 
 // Armazenar o user_id na sessão
@@ -133,11 +133,11 @@ if ($conn->connect_error) {
 $email = $_SESSION['email'];
 
 // Consulta SQL para obter informações do usuário com base no e-mail da sessão
-$sql = "SELECT user_id, nome, status, permission, saldo, transacoes_aproved FROM users WHERE email = ?";
+$sql = "SELECT user_id, nome, status, permission, transacoes_aproved FROM users WHERE email = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $email);
 $stmt->execute();
-$stmt->bind_result($user_id, $nome, $status, $permission, $saldo, $transacoes_aproved);
+$stmt->bind_result($user_id, $nome, $status, $permission, $transacoes_aproved);
 $stmt->fetch();
 
 // Armazenar user_id em uma variável
@@ -898,7 +898,7 @@ $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' 
             $offset = ($page - 1) * $limit;
 
             // Atualizar a consulta SQL para buscar as solicitações usando o user_id
-            $sql_solicitacoes = "SELECT id, externalreference, amount, client_name, client_document, client_email, real_data, status, paymentcode, adquirente_ref, deposito_liquido 
+            $sql_solicitacoes = "SELECT id, externalreference, amount, client_name, client_document, client_email, real_data, status, paymentcode, adquirente_ref, amount 
                      FROM solicitacoes 
                      WHERE user_id = ? 
                      ORDER BY id DESC 
@@ -918,7 +918,7 @@ $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' 
             $total_pages = ceil($total_records / $limit);
 
             // Calcular somas dos depósitos aprovados e depósitos líquidos aprovados
-            $sql_somas = "SELECT SUM(deposito_liquido) as total_liquido, SUM(amount) as total_aprovado 
+            $sql_somas = "SELECT SUM(amount) as total_liquido, SUM(amount) as total_aprovado 
               FROM solicitacoes 
               WHERE user_id = ? AND status = 'PAID_OUT'";
             $stmt_somas = $conn->prepare($sql_somas);
@@ -1153,7 +1153,7 @@ $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' 
                                         <td>
                                             <div>
                                                 <span class="d-block fw-medium mb-1">R$
-                                                    <?php echo number_format($row['deposito_liquido'], 2); ?></span>
+                                                    <?php echo number_format($row['amount'], 2); ?></span>
                                             </div>
                                         </td>
                                         <td>

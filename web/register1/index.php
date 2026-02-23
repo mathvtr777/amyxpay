@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
 $host = $_SERVER['HTTP_HOST'];
 $baseUrl = $protocol . '://' . $host;
@@ -76,14 +76,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $secret = $ga->createSecret();
     $_SESSION['2fa_secret'] = $secret;
 
-    $insertQuery = "INSERT INTO users (id, user_id, nome, email, senha, telefone, saldo, data_cadastro, status, permission, cliente_id, taxa_cash_in, taxa_cash_out,2fa_secret) 
+    $insertQuery = "INSERT INTO users (id, user_id, nome, email, senha, telefone, saldo, data_cadastro, status, permission, cliente_id,2fa_secret) 
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($insertQuery);
     if (!$stmt) {
       die("Erro na preparação da consulta: " . $conn->error);
     }
 
-    $stmt->bind_param("issssisssssiis", $nextId, $user_id, $nome, $email, $senhaHash, $telefone, $saldo, $dataCadastroFormatada, $status, $permission, $clienteId, $taxa_cash_in, $taxa_cash_out, $secret);
+    $stmt->bind_param("issssisssssiis", $nextId, $user_id, $nome, $email, $senhaHash, $telefone, $dataCadastroFormatada, $status, $permission, $clienteId, $secret);
 
     if ($stmt->execute()) {
 
@@ -176,7 +176,7 @@ function getWebhookUrl($conn)
 
 function getTaxaPadroes($conn)
 {
-  $query = "SELECT taxa_cash_in_padrao, taxa_cash_out_padrao FROM app LIMIT 1";
+  $query = "SELECT taxa_cash_in_padrao_padrao FROM app LIMIT 1";
   $result = $conn->query($query);
 
   if ($result && $result->num_rows > 0) {
